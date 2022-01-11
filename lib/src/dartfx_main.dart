@@ -92,20 +92,9 @@ dynamic executeExpressionWithEnv(
   var program = parseProgram(content: expression);
   var visitor = AstRuntimeVisitor();
   var ast = program.accept(visitor);
-  var executor = DefaultAstRuntimeExecutor(envValue: (env) {
+  var executor = DefaultAstRuntimeExecutor(envValue: (envValue) {
     if (envs?.isNotEmpty == true) {
-      try {
-        env = env.substring(1, env.length - 1);
-        var fields = env.split(".");
-        dynamic value = envs!;
-        for (var i = 0; i < fields.length; i++) {
-          value = value[fields[i]];
-        }
-        return value;
-      } catch (e) {
-        logError(_tag, e.toString());
-        return null;
-      }
+      return parseEnvValue(envValue, envs!);
     } else {
       return null;
     }
@@ -120,4 +109,24 @@ dynamic fx(String expression) {
 
 dynamic fxWithEnvs(String expression, Map<String, dynamic> envs) {
   return executeExpressionWithEnv(expression: expression, envs: envs);
+}
+
+///读取变量值
+dynamic parseEnvValue(String envValue, Map<String, dynamic> envs) {
+  if (envs.isNotEmpty && envValue.length > 2) {
+    try {
+      envValue = envValue.substring(1, envValue.length - 1);
+      var fields = envValue.split(".");
+      dynamic value = envs;
+      for (var i = 0; i < fields.length; i++) {
+        value = value[fields[i]];
+      }
+      return value;
+    } catch (e) {
+      logError(_tag, e.toString());
+      return null;
+    }
+  } else {
+    return null;
+  }
 }
