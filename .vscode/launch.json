@@ -5,19 +5,11 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "aviator_dart",
+			"name": "dartfx",
 			"request": "launch",
 			"type": "dart",
 			"cwd": "${workspaceFolder}/example",
-			"program": "fx.dart",
+			"program": "main.dart",
 		},
-		{
-			"name": "web",
-			"type": "edge",
-			"request": "launch",
-			// "url": "http://localhost/index.html",
-			// "webRoot": "${workspaceFolder}/example"
-			"file": "${workspaceFolder}/example/index.html"
-		}
 	]
 }
