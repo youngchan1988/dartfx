@@ -1,0 +1,23 @@
+{
+	// 使用 IntelliSense 了解相关属性。 
+	// 悬停以查看现有属性的描述。
+	// 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "aviator_dart",
+			"request": "launch",
+			"type": "dart",
+			"cwd": "/Users/youngchan/Project/newcore/aviator_dart/example",
+			"program": "aviator_dart_example.dart",
+		},
+		{
+			"name": "web",
+			"type": "edge",
+			"request": "launch",
+			// "url": "http://localhost/index.html",
+			// "webRoot": "${workspaceFolder}/example"
+			"file": "${workspaceFolder}/example/index.html"
+		}
+	]
+}

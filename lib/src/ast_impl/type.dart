@@ -1,0 +1,697 @@
+// Copyright (c) 2014, the Dart project authors. Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
+import 'package:dartfx/src/ast/element.dart';
+import 'package:dartfx/src/ast/nullability_suffix.dart';
+import 'package:dartfx/src/ast/type.dart';
+import 'package:dartfx/src/ast/type_visitor.dart';
+import 'package:dartfx/src/lexer/tokens/keyword_token.dart';
+
+import 'display_string_builder.dart';
+import 'element.dart';
+import 'element_type_provider.dart';
+import 'type_algebra.dart';
+
+/// The type of a function, method, constructor, getter, or setter.
+class FunctionTypeImpl extends TypeImpl implements FunctionType {
+  @override
+  final DartType returnType;
+
+  @override
+  final List<TypeParameterElement> typeFormals;
+
+  @override
+  final List<ParameterElement> parameters;
+
+  @override
+  final NullabilitySuffix nullabilitySuffix;
+
+  FunctionTypeImpl({
+    required List<TypeParameterElement> typeFormals,
+    required List<ParameterElement> parameters,
+    required DartType returnType,
+    required NullabilitySuffix nullabilitySuffix,
+    InstantiatedTypeAliasElement? alias,
+  })  : typeFormals = typeFormals,
+        parameters = _sortNamedParameters(parameters),
+        returnType = returnType,
+        nullabilitySuffix = nullabilitySuffix,
+        super(null, alias: alias);
+
+  @override
+  int get hashCode {
+    // Reference the arrays of parameters
+    final normalParameterTypes = this.normalParameterTypes;
+    final optionalParameterTypes = this.optionalParameterTypes;
+    var namedParameterTypes = this.namedParameterTypes.values;
+    // Generate the hashCode
+    var code = returnType.hashCode;
+    for (int i = 0; i < normalParameterTypes.length; i++) {
+      code = (code << 1) + normalParameterTypes[i].hashCode;
+    }
+    for (int i = 0; i < optionalParameterTypes.length; i++) {
+      code = (code << 1) + optionalParameterTypes[i].hashCode;
+    }
+    for (DartType type in namedParameterTypes) {
+      code = (code << 1) + type.hashCode;
+    }
+    return code;
+  }
+
+  @Deprecated('Check element, or use getDisplayString()')
+  @override
+  String? get name => null;
+
+  @override
+  Map<String, DartType> get namedParameterTypes {
+    // TODO(brianwilkerson) This implementation breaks the contract because the
+    //  parameters will not necessarily be returned in the order in which they
+    //  were declared.
+    Map<String, DartType> types = <String, DartType>{};
+    _forEachParameterType(ParameterKind.NAMED, (name, type) {
+      types[name] = type;
+    });
+    _forEachParameterType(ParameterKind.NAMED_REQUIRED, (name, type) {
+      types[name] = type;
+    });
+    return types;
+  }
+
+  @override
+  List<String> get normalParameterNames => parameters
+      .where((p) => p.isRequiredPositional)
+      .map((p) => p.name)
+      .toList();
+
+  @override
+  List<DartType> get normalParameterTypes {
+    List<DartType> types = <DartType>[];
+    _forEachParameterType(ParameterKind.REQUIRED, (name, type) {
+      types.add(type);
+    });
+    return types;
+  }
+
+  @override
+  List<String> get optionalParameterNames => parameters
+      .where((p) => p.isOptionalPositional)
+      .map((p) => p.name)
+      .toList();
+
+  @override
+  List<DartType> get optionalParameterTypes {
+    List<DartType> types = <DartType>[];
+    _forEachParameterType(ParameterKind.POSITIONAL, (name, type) {
+      types.add(type);
+    });
+    return types;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) {
+      return true;
+    }
+
+    if (other is FunctionTypeImpl) {
+      if (other.nullabilitySuffix != nullabilitySuffix) {
+        return false;
+      }
+
+      if (other.typeFormals.length != typeFormals.length) {
+        return false;
+      }
+      // `<T>T -> T` should be equal to `<U>U -> U`
+      // To test this, we instantiate both types with the same (unique) type
+      // variables, and see if the result is equal.
+      if (typeFormals.isNotEmpty) {
+        var freshVariables = FunctionTypeImpl.relateTypeFormals(
+            this, other, (t, s, _, __) => t == s);
+        if (freshVariables == null) {
+          return false;
+        }
+        return instantiate(freshVariables) == other.instantiate(freshVariables);
+      }
+
+      return other.returnType == returnType &&
+          _equalParameters(other.parameters, parameters);
+    }
+    return false;
+  }
+
+  @override
+  R accept<R>(TypeVisitor<R> visitor) {
+    return visitor.visitFunctionType(this);
+  }
+
+  @override
+  R acceptWithArgument<R, A>(
+    TypeVisitorWithArgument<R, A> visitor,
+    A argument,
+  ) {
+    return visitor.visitFunctionType(this, argument);
+  }
+
+  @override
+  void appendTo(ElementDisplayStringBuilder builder) {
+    builder.writeFunctionType(this);
+  }
+
+  @override
+  FunctionTypeImpl instantiate(List<DartType> argumentTypes) {
+    if (argumentTypes.length != typeFormals.length) {
+      throw ArgumentError("argumentTypes.length (${argumentTypes.length}) != "
+          "typeFormals.length (${typeFormals.length})");
+    }
+    if (argumentTypes.isEmpty) {
+      return this;
+    }
+
+    var substitution = Substitution.fromPairs(typeFormals, argumentTypes);
+
+    return FunctionTypeImpl(
+      returnType: substitution.substituteType(returnType),
+      typeFormals: const [],
+      parameters: parameters
+          .map((p) => p.copyWith(type: substitution.substituteType(p.type)))
+          .toList(),
+      nullabilitySuffix: nullabilitySuffix,
+    );
+  }
+
+  @override
+  bool referencesAny(Set<TypeParameterElement> parameters) {
+    if (typeFormals.any((element) {
+      var elementImpl = element as TypeParameterElementImpl;
+      assert(!parameters.contains(elementImpl));
+
+      var bound = elementImpl.bound as TypeImpl?;
+      if (bound != null && bound.referencesAny(parameters)) {
+        return true;
+      }
+
+      var defaultType = elementImpl.defaultType as TypeImpl;
+      return defaultType.referencesAny(parameters);
+    })) {
+      return true;
+    }
+
+    if (this.parameters.any((element) {
+      var type = element.type as TypeImpl;
+      return type.referencesAny(parameters);
+    })) {
+      return true;
+    }
+
+    return (returnType as TypeImpl).referencesAny(parameters);
+  }
+
+  @override
+  TypeImpl withNullability(NullabilitySuffix nullabilitySuffix) {
+    if (this.nullabilitySuffix == nullabilitySuffix) return this;
+    return FunctionTypeImpl(
+      typeFormals: typeFormals,
+      parameters: parameters,
+      returnType: returnType,
+      nullabilitySuffix: nullabilitySuffix,
+      alias: alias,
+    );
+  }
+
+  void _forEachParameterType(
+      ParameterKind kind, void Function(String name, DartType type) callback) {
+    for (var parameter in (parameters.cast<ParameterElementImpl>())) {
+      // ignore: deprecated_member_use_from_same_package
+      if (parameter.parameterKind == kind) {
+        callback(parameter.name, parameter.type);
+      }
+    }
+  }
+
+  /// Given two functions [f1] and [f2] where f1 and f2 are known to be
+  /// generic function types (both have type formals), this checks that they
+  /// have the same number of formals, and that those formals have bounds
+  /// (e.g. `<T extends LowerBound>`) that satisfy [relation].
+  ///
+  /// The return value will be a new list of fresh type variables, that can be
+  /// used to instantiate both function types, allowing further comparison.
+  /// For example, given `<T>T -> T` and `<U>U -> U` we can instantiate them
+  /// with `F` to get `F -> F` and `F -> F`, which we can see are equal.
+  static List<TypeParameterType>? relateTypeFormals(
+      FunctionType f1,
+      FunctionType f2,
+      bool Function(DartType bound2, DartType bound1,
+              TypeParameterElement formal2, TypeParameterElement formal1)
+          relation) {
+    List<TypeParameterElement> params1 = f1.typeFormals;
+    List<TypeParameterElement> params2 = f2.typeFormals;
+    return relateTypeFormals2(params1, params2, relation);
+  }
+
+  static List<TypeParameterType>? relateTypeFormals2(
+      List<TypeParameterElement> params1,
+      List<TypeParameterElement> params2,
+      bool Function(DartType bound2, DartType bound1,
+              TypeParameterElement formal2, TypeParameterElement formal1)
+          relation) {
+    int count = params1.length;
+    if (params2.length != count) {
+      return null;
+    }
+    // We build up a substitution matching up the type parameters
+    // from the two types, {variablesFresh/variables1} and
+    // {variablesFresh/variables2}
+    List<TypeParameterElement> variables1 = <TypeParameterElement>[];
+    List<TypeParameterElement> variables2 = <TypeParameterElement>[];
+    var variablesFresh = <TypeParameterType>[];
+    for (int i = 0; i < count; i++) {
+      TypeParameterElement p1 = params1[i];
+      TypeParameterElement p2 = params2[i];
+      TypeParameterElementImpl pFresh =
+          TypeParameterElementImpl.synthetic(p2.name);
+      ElementTypeProvider.current.freshTypeParameterCreated(pFresh, p2);
+
+      var variableFresh = pFresh.instantiate(
+        nullabilitySuffix: NullabilitySuffix.none,
+      );
+
+      variables1.add(p1);
+      variables2.add(p2);
+      variablesFresh.add(variableFresh);
+
+      DartType bound1 = p1.bound ?? VoidTypeImpl.instance;
+      DartType bound2 = p2.bound ?? VoidTypeImpl.instance;
+      bound1 = Substitution.fromPairs(variables1, variablesFresh)
+          .substituteType(bound1);
+      bound2 = Substitution.fromPairs(variables2, variablesFresh)
+          .substituteType(bound2);
+      if (!relation(bound2, bound1, p2, p1)) {
+        return null;
+      }
+    }
+    return variablesFresh;
+  }
+
+  /// Return `true` if given lists of parameters are semantically - have the
+  /// same kinds (required, optional position, named, required named), and
+  /// the same types. Named parameters must also have same names. Named
+  /// parameters must be sorted in the given lists.
+  static bool _equalParameters(
+    List<ParameterElement> firstParameters,
+    List<ParameterElement> secondParameters,
+  ) {
+    if (firstParameters.length != secondParameters.length) {
+      return false;
+    }
+    for (var i = 0; i < firstParameters.length; ++i) {
+      var firstParameter = firstParameters[i] as ParameterElementImpl;
+      var secondParameter = secondParameters[i] as ParameterElementImpl;
+      // ignore: deprecated_member_use_from_same_package
+      if (firstParameter.parameterKind != secondParameter.parameterKind) {
+        return false;
+      }
+      if (firstParameter.type != secondParameter.type) {
+        return false;
+      }
+      if (firstParameter.isNamed &&
+          firstParameter.name != secondParameter.name) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /// If named parameters are already sorted in [parameters], return it.
+  /// Otherwise, return a new list, in which named parameters are sorted.
+  static List<ParameterElement> _sortNamedParameters(
+    List<ParameterElement> parameters,
+  ) {
+    int? firstNamedParameterIndex;
+
+    // Check if already sorted.
+    var namedParametersAlreadySorted = true;
+    var lastNamedParameterName = '';
+    for (var i = 0; i < parameters.length; ++i) {
+      var parameter = parameters[i];
+      if (parameter.isNamed) {
+        firstNamedParameterIndex ??= i;
+        var name = parameter.name;
+        if (lastNamedParameterName.compareTo(name) > 0) {
+          namedParametersAlreadySorted = false;
+          break;
+        }
+        lastNamedParameterName = name;
+      }
+    }
+    if (namedParametersAlreadySorted) {
+      return parameters;
+    }
+
+    // Sort named parameters.
+    var namedParameters =
+        parameters.sublist(firstNamedParameterIndex!, parameters.length);
+    namedParameters.sort((a, b) => a.name.compareTo(b.name));
+
+    // Combine into a new list, with sorted named parameters.
+    var newParameters = parameters.toList();
+    newParameters.replaceRange(
+        firstNamedParameterIndex, parameters.length, namedParameters);
+    return newParameters;
+  }
+}
+
+class InstantiatedTypeAliasElementImpl implements InstantiatedTypeAliasElement {
+  @override
+  final TypeAliasElement element;
+
+  @override
+  final List<DartType> typeArguments;
+
+  InstantiatedTypeAliasElementImpl({
+    required this.element,
+    required this.typeArguments,
+  });
+}
+
+/// The abstract class `TypeImpl` implements the behavior common to objects
+/// representing the declared type of elements in the element model.
+abstract class TypeImpl implements DartType {
+  @override
+  InstantiatedTypeAliasElement? alias;
+
+  /// The element representing the declaration of this type, or `null` if the
+  /// type has not, or cannot, be associated with an element.
+  final Element? _element;
+
+  /// Initialize a newly created type to be declared by the given [element].
+  TypeImpl(this._element, {this.alias});
+
+  @deprecated
+  @override
+  String get displayName {
+    return getDisplayString(
+      withNullability: false,
+      skipAllDynamicArguments: true,
+    );
+  }
+
+  @override
+  Element? get element => _element;
+
+  @override
+  bool get isBottom => false;
+
+  @override
+  bool get isDartAsyncFuture => false;
+
+  @override
+  bool get isDartAsyncFutureOr => false;
+
+  @override
+  bool get isDartAsyncStream => false;
+
+  @override
+  bool get isDartCoreBool => false;
+
+  @override
+  bool get isDartCoreDouble => false;
+
+  @override
+  bool get isDartCoreFunction => false;
+
+  @override
+  bool get isDartCoreInt => false;
+
+  @override
+  bool get isDartCoreIterable => false;
+
+  @override
+  bool get isDartCoreList => false;
+
+  @override
+  bool get isDartCoreMap => false;
+
+  @override
+  bool get isDartCoreNull => false;
+
+  @override
+  bool get isDartCoreNum => false;
+
+  @override
+  bool get isDartCoreObject => false;
+
+  @override
+  bool get isDartCoreSet => false;
+
+  @override
+  bool get isDartCoreString => false;
+
+  @override
+  bool get isDartCoreSymbol => false;
+
+  @override
+  bool get isVoid => false;
+
+  @override
+  NullabilitySuffix get nullabilitySuffix;
+
+  /// Append a textual representation of this type to the given [builder].
+  void appendTo(ElementDisplayStringBuilder builder);
+
+  @override
+  String getDisplayString({
+    bool skipAllDynamicArguments = false,
+    required bool withNullability,
+  }) {
+    var builder = ElementDisplayStringBuilder(
+      skipAllDynamicArguments: skipAllDynamicArguments,
+      withNullability: withNullability,
+    );
+    appendTo(builder);
+    return builder.toString();
+  }
+
+  /// Returns true if this type references any of the [parameters].
+  bool referencesAny(Set<TypeParameterElement> parameters) {
+    return false;
+  }
+
+  @override
+  DartType resolveToBound(DartType objectType) => this;
+
+  @override
+  String toString() {
+    return getDisplayString(withNullability: true);
+  }
+
+  /// Return the same type, but with the given [nullabilitySuffix].
+  ///
+  /// If the nullability of `this` already matches [nullabilitySuffix], `this`
+  /// is returned.
+  ///
+  /// Note: this method just does low-level manipulations of the underlying
+  /// type, so it is what you want if you are constructing a fresh type and want
+  /// it to have the correct nullability suffix, but it is generally *not* what
+  /// you want if you're manipulating existing types.  For manipulating existing
+  /// types, please use the methods in [TypeSystemImpl].
+  TypeImpl withNullability(NullabilitySuffix nullabilitySuffix);
+
+  /// Return `true` if corresponding elements of the [first] and [second] lists
+  /// of type arguments are all equal.
+  static bool equalArrays(List<DartType> first, List<DartType> second) {
+    if (first.length != second.length) {
+      return false;
+    }
+    for (int i = 0; i < first.length; i++) {
+      if (first[i] != second[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+}
+
+/// A concrete implementation of a [TypeParameterType].
+class TypeParameterTypeImpl extends TypeImpl implements TypeParameterType {
+  @override
+  final NullabilitySuffix nullabilitySuffix;
+
+  /// An optional promoted bound on the type parameter.
+  ///
+  /// 'null' indicates that the type parameter's bound has not been promoted and
+  /// is therefore the same as the bound of [element].
+  final DartType? promotedBound;
+
+  /// Initialize a newly created type parameter type to be declared by the given
+  /// [element] and to have the given name.
+  TypeParameterTypeImpl({
+    required TypeParameterElement element,
+    required this.nullabilitySuffix,
+    this.promotedBound,
+    InstantiatedTypeAliasElement? alias,
+  }) : super(
+          element,
+          alias: alias,
+        );
+
+  @override
+  DartType get bound => promotedBound ?? element.bound ?? VoidTypeImpl.instance;
+
+  @override
+  ElementLocation get definition => element.location!;
+
+  @override
+  TypeParameterElement get element => super.element as TypeParameterElement;
+
+  @override
+  int get hashCode => element.hashCode;
+
+  @override
+  bool get isBottom {
+    // In principle we ought to be able to do `return bound.isBottom;`, but that
+    // goes into an infinite loop with illegal code in which type parameter
+    // bounds form a loop.  So we have to be more careful.
+    Set<TypeParameterElement> seenTypes = {};
+    TypeParameterType type = this;
+    while (seenTypes.add(type.element)) {
+      var bound = type.bound;
+      if (bound is TypeParameterType) {
+        type = bound;
+      } else {
+        return bound.isBottom;
+      }
+    }
+    // Infinite loop.
+    return false;
+  }
+
+  @Deprecated('Check element, or use getDisplayString()')
+  @override
+  String get name => element.name;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) {
+      return true;
+    }
+
+    if (other is TypeParameterTypeImpl && other.element == element) {
+      if (other.nullabilitySuffix != nullabilitySuffix) {
+        return false;
+      }
+      return other.promotedBound == promotedBound;
+    }
+
+    return false;
+  }
+
+  @override
+  R accept<R>(TypeVisitor<R> visitor) {
+    return visitor.visitTypeParameterType(this);
+  }
+
+  @override
+  R acceptWithArgument<R, A>(
+    TypeVisitorWithArgument<R, A> visitor,
+    A argument,
+  ) {
+    return visitor.visitTypeParameterType(this, argument);
+  }
+
+  @override
+  void appendTo(ElementDisplayStringBuilder builder) {
+    builder.writeTypeParameterType(this);
+  }
+
+  @override
+  bool referencesAny(Set<TypeParameterElement> parameters) {
+    return parameters.contains(element);
+  }
+
+  @override
+  DartType resolveToBound(DartType objectType) {
+    final promotedBound = this.promotedBound;
+    if (promotedBound != null) {
+      return promotedBound.resolveToBound(objectType);
+    }
+
+    var bound = element.bound;
+    if (bound == null) {
+      return objectType;
+    }
+
+    NullabilitySuffix newNullabilitySuffix;
+    if (nullabilitySuffix == NullabilitySuffix.question ||
+        bound.nullabilitySuffix == NullabilitySuffix.question) {
+      newNullabilitySuffix = NullabilitySuffix.question;
+    } else if (nullabilitySuffix == NullabilitySuffix.star ||
+        bound.nullabilitySuffix == NullabilitySuffix.star) {
+      newNullabilitySuffix = NullabilitySuffix.star;
+    } else {
+      newNullabilitySuffix = NullabilitySuffix.none;
+    }
+
+    return (bound.resolveToBound(objectType) as TypeImpl)
+        .withNullability(newNullabilitySuffix);
+  }
+
+  @override
+  TypeImpl withNullability(NullabilitySuffix nullabilitySuffix) {
+    if (this.nullabilitySuffix == nullabilitySuffix) return this;
+    return TypeParameterTypeImpl(
+      element: element,
+      nullabilitySuffix: nullabilitySuffix,
+      promotedBound: promotedBound,
+    );
+  }
+}
+
+/// A concrete implementation of a [VoidType].
+class VoidTypeImpl extends TypeImpl implements VoidType {
+  /// The unique instance of this class, with indeterminate nullability.
+  static final VoidTypeImpl instance = VoidTypeImpl._();
+
+  /// Prevent the creation of instances of this class.
+  VoidTypeImpl._() : super(null);
+
+  @override
+  int get hashCode => 2;
+
+  @override
+  bool get isVoid => true;
+
+  @Deprecated('Check element, or use getDisplayString()')
+  @override
+  String get name => Keyword.VOID.lexeme;
+
+  @override
+  NullabilitySuffix get nullabilitySuffix => NullabilitySuffix.none;
+
+  @override
+  bool operator ==(Object object) => identical(object, this);
+
+  @override
+  R accept<R>(TypeVisitor<R> visitor) {
+    return visitor.visitVoidType(this);
+  }
+
+  @override
+  R acceptWithArgument<R, A>(
+    TypeVisitorWithArgument<R, A> visitor,
+    A argument,
+  ) {
+    return visitor.visitVoidType(this, argument);
+  }
+
+  @override
+  void appendTo(ElementDisplayStringBuilder builder) {
+    builder.writeVoidType();
+  }
+
+  @override
+  TypeImpl withNullability(NullabilitySuffix nullabilitySuffix) {
+    // The void type is always nullable.
+    return this;
+  }
+}
