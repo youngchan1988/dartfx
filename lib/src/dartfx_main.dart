@@ -3,6 +3,7 @@
 import 'package:analyzer/error/listener.dart';
 import 'package:analyzer/src/string_source.dart';
 import 'package:dartfx/src/runtime/ast_context.dart';
+import 'package:dartfx/src/util/logger.dart';
 import 'ast_impl/ast.dart';
 import 'ast/line_info.dart';
 import 'ast/results.dart';
@@ -14,10 +15,7 @@ import 'parser/parser.dart';
 import 'runtime/ast_runtime.dart';
 import 'runtime/ast_runtime_node.dart' as runtime;
 
-/// Checks if you are awesome. Spoiler: you are.
-class Awesome {
-  bool get isAwesome => true;
-}
+const _tag = "dartfx";
 
 /// Returns the result of parsing the given [content] as a compilation unit.
 ///
@@ -79,11 +77,47 @@ ProgramImpl parseProgram({required String content}) {
   return astBuilder.pop() as ProgramImpl;
 }
 
-dynamic executeExpression({required String expression}) {
+dynamic executeExpression(
+    {required String expression, dynamic Function(String)? envValue}) {
   var program = parseProgram(content: expression);
   var visitor = AstRuntimeVisitor();
   var ast = program.accept(visitor);
-  var executor = DefaultAstRuntimeExecutor();
+  var executor = DefaultAstRuntimeExecutor(envValue: envValue);
   var astContext = AstContext();
   return executor.execute(astContext, runtime.Program.fromAst(ast)!.body!);
+}
+
+dynamic executeExpressionWithEnv(
+    {required String expression, Map<String, dynamic>? envs}) {
+  var program = parseProgram(content: expression);
+  var visitor = AstRuntimeVisitor();
+  var ast = program.accept(visitor);
+  var executor = DefaultAstRuntimeExecutor(envValue: (env) {
+    if (envs?.isNotEmpty == true) {
+      try {
+        env = env.substring(1, env.length - 1);
+        var fields = env.split(".");
+        dynamic value = envs!;
+        for (var i = 0; i < fields.length; i++) {
+          value = value[fields[i]];
+        }
+        return value;
+      } catch (e) {
+        logError(_tag, e.toString());
+        return null;
+      }
+    } else {
+      return null;
+    }
+  });
+  var astContext = AstContext();
+  return executor.execute(astContext, runtime.Program.fromAst(ast)!.body!);
+}
+
+dynamic fx(String expression) {
+  return executeExpression(expression: expression);
+}
+
+dynamic fxWithEnvs(String expression, Map<String, dynamic> envs) {
+  return executeExpressionWithEnv(expression: expression, envs: envs);
 }

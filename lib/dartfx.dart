@@ -1,7 +1,7 @@
 /// Support for doing something awesome.
 ///
 /// More dartdocs go here.
-library dart_fx;
+library dartfx;
 
 export 'src/lexer/expression_lexer.dart';
 export 'src/lexer/tokens/token.dart';

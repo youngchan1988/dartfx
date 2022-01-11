@@ -11,5 +11,17 @@
 			"cwd": "${workspaceFolder}/example",
 			"program": "main.dart",
 		},
+		{
+			"name": "dartfxTest",
+			"request": "launch",
+			"type": "dart",
+			"cwd": "${workspaceFolder}/example",
+			"program": "main_test.dart",
+			"args": [
+				"-e",
+				// "\\$43858.accountingVoucherType\\$=\\$43859.unitName\\$+\\$43859.currency\\$+\"number\""
+				"\\$43859.currency\\$+\\$43859.unitName\\$+\"number\""
+			]
+		},
 	]
 }

@@ -725,7 +725,8 @@ abstract class Scanner {
     }
 
     if (identical(next, $$)) {
-      return tokenizeKeywordOrIdentifier(next, /* allowDollar = */ true);
+      // return tokenizeKeywordOrIdentifier(next, /* allowDollar = */ true);
+      return tokenizeString(next, scanOffset, false);
     }
 
     if (identical(next, $MINUS)) {

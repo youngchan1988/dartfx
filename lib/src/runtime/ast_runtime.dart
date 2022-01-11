@@ -13,6 +13,8 @@ import 'ast_runtime_executor.dart';
 ///
 ///
 
+typedef EnvValue = dynamic Function(String);
+
 ///Ast函数定义
 class AstFunction {
   String? name;
@@ -142,10 +144,17 @@ class ReturnValue {
 }
 
 class DefaultAstRuntimeExecutor implements AstRuntimeExecutor {
+  DefaultAstRuntimeExecutor({this.envValue});
+
+  final EnvValue? envValue;
+
   static final _tag = "DefaultAstRuntimeExecutor";
 
   @override
-  dynamic execute(AstContext? astContext, AstRuntimeNode? astNode) {
+  dynamic execute(
+    AstContext? astContext,
+    AstRuntimeNode? astNode,
+  ) {
     if (astNode is AsExpression) {
       return executeAsExpression(astContext, astNode);
     } else if (astNode is IsExpression) {
@@ -196,7 +205,7 @@ class DefaultAstRuntimeExecutor implements AstRuntimeExecutor {
     } else if (astNode is StringInterpolation) {
       return executeStringInterpolation(astContext, astNode);
     } else if (astNode is StringLiteral) {
-      return executeStringLiteral(astContext, astNode);
+      return executeStringLiteral(astContext, astNode, envValue: envValue);
     } else if (astNode is ThisExpression) {
       return executeThisExpression(astContext!, astNode);
     } else if (astNode is VariableDeclarationList) {
@@ -667,7 +676,11 @@ class DefaultAstRuntimeExecutor implements AstRuntimeExecutor {
 
   @override
   dynamic executeStringLiteral(
-      AstContext? astContext, StringLiteral stringLiteral) {
+      AstContext? astContext, StringLiteral stringLiteral,
+      {EnvValue? envValue}) {
+    if (_isEnvString(stringLiteral.value.toString()) && envValue != null) {
+      return envValue(stringLiteral.value.toString()) ?? '';
+    }
     return stringLiteral.value;
   }
 
@@ -1064,5 +1077,15 @@ class DefaultAstRuntimeExecutor implements AstRuntimeExecutor {
       AstContext? astContext, NamedExpression expression) {
     var value = execute(astContext, expression.expression);
     return NamedParameter(name: expression.name, value: value);
+  }
+
+  bool _isEnvString(String value) {
+    if (value.length > 2 &&
+        value.indexOf("\$") == 0 &&
+        value.lastIndexOf("\$") == value.length - 1) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

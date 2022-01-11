@@ -38,6 +38,7 @@ enum Quote {
   RawDouble,
   RawMultiLineSingle,
   RawMultiLineDouble,
+  Dollar,
 }
 
 Quote analyzeQuote(String first) {
@@ -49,7 +50,8 @@ Quote analyzeQuote(String first) {
   if (first.startsWith('r"')) return Quote.RawDouble;
   if (first.startsWith("'")) return Quote.Single;
   if (first.startsWith("r'")) return Quote.RawSingle;
-  return throw new UnsupportedError("'$first' in analyzeQuote");
+  if (first.startsWith("\$")) return Quote.Dollar;
+  return throw UnsupportedError("'$first' in analyzeQuote");
 }
 
 // Note: based on [StringValidator.quotingFromString]
@@ -83,6 +85,8 @@ int lengthOfOptionalWhitespacePrefix(String first, int start) {
 
 int firstQuoteLength(String first, Quote quote) {
   switch (quote) {
+    case Quote.Dollar:
+      return 0;
     case Quote.Single:
     case Quote.Double:
       return 1;
@@ -103,6 +107,8 @@ int firstQuoteLength(String first, Quote quote) {
 
 int lastQuoteLength(Quote quote) {
   switch (quote) {
+    case Quote.Dollar:
+      return 0;
     case Quote.Single:
     case Quote.Double:
     case Quote.RawSingle:
@@ -146,6 +152,7 @@ String unescapeString(
 String unescape(String string, Quote quote, Object location,
     UnescapeErrorListener listener) {
   switch (quote) {
+    case Quote.Dollar:
     case Quote.Single:
     case Quote.Double:
       return !string.contains("\\")
