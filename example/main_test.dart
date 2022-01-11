@@ -31,7 +31,7 @@ void main(List<String> arguments) {
   //     envValue: (env) {
   //       return env.substring(1, env.length - 1);
   //     });
-  var result = executeExpressionWithEnv(expression: expression, envs: {
+  var result = fxWithEnvs(expression, {
     "43858": {"unitName": "单位"},
     "43859": {"currency": "100", "unitName": "人民币"}
   });

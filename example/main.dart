@@ -10,6 +10,6 @@ import 'package:dartfx/dartfx.dart';
 ///
 
 void main() {
-  var result = executeExpression(expression: "1+(2+3)*7-4");
+  var result = fx("1+(2+3)*7-4");
   print('Fx result: $result');
 }
