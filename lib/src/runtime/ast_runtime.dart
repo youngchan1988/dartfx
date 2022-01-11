@@ -678,7 +678,7 @@ class DefaultAstRuntimeExecutor implements AstRuntimeExecutor {
   dynamic executeStringLiteral(
       AstContext? astContext, StringLiteral stringLiteral,
       {EnvValue? envValue}) {
-    if (_isEnvString(stringLiteral.value.toString()) && envValue != null) {
+    if (isEnvString(stringLiteral.value.toString()) && envValue != null) {
       return envValue(stringLiteral.value.toString()) ?? '';
     }
     return stringLiteral.value;
@@ -1079,7 +1079,7 @@ class DefaultAstRuntimeExecutor implements AstRuntimeExecutor {
     return NamedParameter(name: expression.name, value: value);
   }
 
-  bool _isEnvString(String value) {
+  bool isEnvString(String value) {
     if (value.length > 2 &&
         value.indexOf("\$") == 0 &&
         value.lastIndexOf("\$") == value.length - 1) {

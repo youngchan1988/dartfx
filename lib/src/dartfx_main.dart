@@ -111,21 +111,51 @@ dynamic fxWithEnvs(String expression, Map<String, dynamic> envs) {
   return executeExpressionWithEnv(expression: expression, envs: envs);
 }
 
+void fxAssignment(String expression, Map<String, dynamic> envs) {
+  var program = parseProgram(content: expression);
+
+  var visitor = AstRuntimeVisitor();
+  var ast = program.accept(visitor);
+
+  var executor = DefaultAstRuntimeExecutor(envValue: (envValue) {
+    return parseEnvValue(envValue, envs);
+  });
+  var runtimeNode = runtime.Program.fromAst(ast)!.body!;
+  if (runtimeNode is! runtime.AssignmentExpression ||
+      (runtimeNode.operator != '=')) {
+    logWarn(_tag, 'Exprssion is not assignment');
+    return;
+  }
+  if (runtimeNode.left is! runtime.StringLiteral ||
+      !executor
+          .isEnvString((runtimeNode.left as runtime.StringLiteral).value)) {
+    logWarn(_tag, 'Assignment left is not env variable');
+    return;
+  }
+  var astContext = AstContext();
+  var rightValue = executor.execute(astContext, runtimeNode.right);
+
+  var leftEnvValue =
+      (runtimeNode.left as runtime.StringLiteral).value as String;
+  leftEnvValue = leftEnvValue.substring(1, leftEnvValue.length - 1);
+  var fields = leftEnvValue.split(".");
+  dynamic value = envs;
+  for (var i = 0; i < fields.length - 1; i++) {
+    value = value[fields[i]];
+  }
+  value[fields[fields.length - 1]] = rightValue;
+}
+
 ///读取变量值
 dynamic parseEnvValue(String envValue, Map<String, dynamic> envs) {
   if (envs.isNotEmpty && envValue.length > 2) {
-    try {
-      envValue = envValue.substring(1, envValue.length - 1);
-      var fields = envValue.split(".");
-      dynamic value = envs;
-      for (var i = 0; i < fields.length; i++) {
-        value = value[fields[i]];
-      }
-      return value;
-    } catch (e) {
-      logError(_tag, e.toString());
-      return null;
+    envValue = envValue.substring(1, envValue.length - 1);
+    var fields = envValue.split(".");
+    dynamic value = envs;
+    for (var i = 0; i < fields.length; i++) {
+      value = value[fields[i]];
     }
+    return value;
   } else {
     return null;
   }

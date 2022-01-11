@@ -31,9 +31,15 @@ void main(List<String> arguments) {
   //     envValue: (env) {
   //       return env.substring(1, env.length - 1);
   //     });
-  var result = fxWithEnvs(expression, {
+  // var result = fxWithEnvs(expression, {
+  //   "43858": {"unitName": "单位"},
+  //   "43859": {"currency": "100", "unitName": "人民币"}
+  // });
+  var envs = {
     "43858": {"unitName": "单位"},
     "43859": {"currency": "100", "unitName": "人民币"}
-  });
-  print('Fx output: $result');
+  };
+  print("Before assignment: $envs");
+  fxAssignment('\$43858.unitName\$=$expression', envs);
+  print("After assignment: $envs");
 }
