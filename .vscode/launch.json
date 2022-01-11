@@ -8,8 +8,8 @@
 			"name": "aviator_dart",
 			"request": "launch",
 			"type": "dart",
-			"cwd": "/Users/youngchan/Project/newcore/aviator_dart/example",
-			"program": "aviator_dart_example.dart",
+			"cwd": "${workspaceFolder}/example",
+			"program": "fx.dart",
 		},
 		{
 			"name": "web",
