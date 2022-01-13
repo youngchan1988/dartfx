@@ -384,6 +384,9 @@ class DefaultAstRuntimeExecutor implements AstRuntimeExecutor {
       case '&':
         var rightValue = execute(astContext, expression.right);
         return leftValue & rightValue;
+      case '^':
+        var rightValue = execute(astContext, expression.right);
+        return leftValue ^ rightValue;
       case '>>':
         var rightValue = execute(astContext, expression.right);
         return leftValue >> rightValue;
@@ -585,7 +588,8 @@ class DefaultAstRuntimeExecutor implements AstRuntimeExecutor {
     if ((argValue is int || argValue is double) &&
         (expression.operator == '++' ||
             expression.operator == '--' ||
-            expression.operator == '-')) {
+            expression.operator == '-' ||
+            expression.operator == '~')) {
       if (expression.operator == "++") {
         astContext!.setVariableValue(
             (expression.argument as SimpleIdentifier).name, argValue + 1);
@@ -604,6 +608,8 @@ class DefaultAstRuntimeExecutor implements AstRuntimeExecutor {
         }
       } else if (expression.operator == "-" && expression.prefix == true) {
         return -argValue;
+      } else if (expression.operator == "~" && expression.prefix == true) {
+        return ~argValue;
       }
     } else if (argValue is bool &&
         expression.operator == '!' &&
@@ -707,6 +713,27 @@ class DefaultAstRuntimeExecutor implements AstRuntimeExecutor {
           break;
         case '/=':
           rightValue = leftValue / rightValue;
+          break;
+        case '~/=':
+          rightValue = leftValue ~/ rightValue;
+          break;
+        case '%=':
+          rightValue = leftValue % rightValue;
+          break;
+        case '&=':
+          rightValue = leftValue & rightValue;
+          break;
+        case '|=':
+          rightValue = leftValue | rightValue;
+          break;
+        case '^=':
+          rightValue = leftValue ^ rightValue;
+          break;
+        case '>>=':
+          rightValue = leftValue >> rightValue;
+          break;
+        case '<<=':
+          rightValue = leftValue << rightValue;
           break;
       }
     }

@@ -1,64 +1,19 @@
 // TODO: Put public facing types in this file.
 
+import 'dart:js';
+
 import 'package:analyzer/error/listener.dart';
 import 'package:analyzer/src/string_source.dart';
+import 'package:dartfx/dartfx.dart';
 import 'package:dartfx/src/runtime/ast_context.dart';
 import 'package:dartfx/src/util/logger.dart';
 import 'ast_impl/ast.dart';
-import 'ast/line_info.dart';
-import 'ast/results.dart';
 import 'ast_impl/ast_runtime_visitor.dart';
-import 'ast_impl/results.dart';
-import 'lexer/expression_lexer.dart';
 import 'parser/ast_builder.dart';
 import 'parser/parser.dart';
-import 'runtime/ast_runtime.dart';
 import 'runtime/ast_runtime_node.dart' as runtime;
 
 const _tag = "dartfx";
-
-/// Returns the result of parsing the given [content] as a compilation unit.
-///
-/// If a [featureSet] is provided, it will be the default set of features that
-/// will be assumed by the parser.
-///
-/// If a [path] is provided, it will be used as the name of the file when
-/// reporting errors.
-///
-/// If [throwIfDiagnostics] is `true` (the default), then if any diagnostics are
-/// produced because of syntactic errors in the [content] an `ArgumentError`
-/// will be thrown.  This behavior is not intended as a way for the client to
-/// find out about errors--it is intended to avoid causing problems for naive
-/// clients that might not be thinking about the possibility of parse errors
-/// (and might therefore make assumptions about the returned AST that don't hold
-/// in the presence of parse errors).  Clients interested in details about parse
-/// errors should pass `false` and check `result.errors` to determine what parse
-/// errors, if any, have occurred.
-ParseStringResult parseString({required String content}) {
-  var source = StringSource(content, '');
-  var errorCollector = RecordingErrorListener();
-  var lexer = ExpressionLexer(expression: content);
-  var token = lexer.scan();
-  var astBuilder = AstBuilder(
-      ErrorReporter(
-        errorCollector,
-        source,
-        isNonNullableByDefault: false,
-      ),
-      true);
-  var parser = Parser(astBuilder);
-
-  parser.parseUnit(token);
-  var unit = astBuilder.pop() as CompilationUnitImpl;
-  unit.lineInfo = LineInfo(lexer.scanner.lineStarts);
-
-  ParseStringResult result =
-      ParseStringResultImpl(content, unit, errorCollector.errors);
-  if (result.errors.isNotEmpty) {
-    throw ArgumentError('Content produced diagnostics when parsed');
-  }
-  return result;
-}
 
 ProgramImpl parseProgram({required String content}) {
   var source = StringSource(content, '');
@@ -87,8 +42,7 @@ dynamic executeExpression(
   return executor.execute(astContext, runtime.Program.fromAst(ast)!.body!);
 }
 
-dynamic executeExpressionWithEnv(
-    {required String expression, Map<String, dynamic>? envs}) {
+dynamic executeExpressionWithEnv({required String expression, Map? envs}) {
   var program = parseProgram(content: expression);
   var visitor = AstRuntimeVisitor();
   var ast = program.accept(visitor);
@@ -107,11 +61,12 @@ dynamic fx(String expression) {
   return executeExpression(expression: expression);
 }
 
-dynamic fxWithEnvs(String expression, Map<String, dynamic> envs) {
+dynamic fxWithEnvs(String expression, Map envs) {
   return executeExpressionWithEnv(expression: expression, envs: envs);
 }
 
-void fxAssignment(String expression, Map<String, dynamic> envs) {
+dynamic fxAssignment(String expression, Map envs,
+    {void Function(List<String>)? leftEnvFields}) {
   var program = parseProgram(content: expression);
 
   var visitor = AstRuntimeVisitor();
@@ -122,7 +77,18 @@ void fxAssignment(String expression, Map<String, dynamic> envs) {
   });
   var runtimeNode = runtime.Program.fromAst(ast)!.body!;
   if (runtimeNode is! runtime.AssignmentExpression ||
-      (runtimeNode.operator != '=')) {
+      (runtimeNode.operator != '=' &&
+          runtimeNode.operator != '+=' &&
+          runtimeNode.operator != '-=' &&
+          runtimeNode.operator != '*=' &&
+          runtimeNode.operator != '/=' &&
+          runtimeNode.operator != '~/=' &&
+          runtimeNode.operator != '%=' &&
+          runtimeNode.operator != '&=' &&
+          runtimeNode.operator != '|=' &&
+          runtimeNode.operator != '^=' &&
+          runtimeNode.operator != '>>=' &&
+          runtimeNode.operator != '<<=')) {
     logWarn(_tag, 'Exprssion is not assignment');
     return;
   }
@@ -133,21 +99,55 @@ void fxAssignment(String expression, Map<String, dynamic> envs) {
     return;
   }
   var astContext = AstContext();
-  var rightValue = executor.execute(astContext, runtimeNode.right);
+  dynamic rightValue = executor.execute(astContext, runtimeNode.right);
 
   var leftEnvValue =
       (runtimeNode.left as runtime.StringLiteral).value as String;
+  var leftValue = parseEnvValue(leftEnvValue, envs);
+
   leftEnvValue = leftEnvValue.substring(1, leftEnvValue.length - 1);
   var fields = leftEnvValue.split(".");
+  leftEnvFields?.call(fields);
   dynamic value = envs;
   for (var i = 0; i < fields.length - 1; i++) {
     value = value[fields[i]];
   }
-  value[fields[fields.length - 1]] = rightValue;
+
+  switch (runtimeNode.operator) {
+    case '+=':
+      rightValue = leftValue + rightValue;
+      break;
+    case '-=':
+      rightValue = leftValue - rightValue;
+      break;
+    case '*=':
+      rightValue = leftValue * rightValue;
+      break;
+    case '%=':
+      rightValue = leftValue % rightValue;
+      break;
+    case '&=':
+      rightValue = leftValue & rightValue;
+      break;
+    case '|=':
+      rightValue = leftValue | rightValue;
+      break;
+    case '^=':
+      rightValue = leftValue ^ rightValue;
+      break;
+    case '>>=':
+      rightValue = leftValue >> rightValue;
+      break;
+    case '<<=':
+      rightValue = leftValue << rightValue;
+      break;
+  }
+  value[fields.last] = rightValue;
+  return rightValue;
 }
 
 ///读取变量值
-dynamic parseEnvValue(String envValue, Map<String, dynamic> envs) {
+dynamic parseEnvValue(String envValue, Map envs) {
   if (envs.isNotEmpty && envValue.length > 2) {
     envValue = envValue.substring(1, envValue.length - 1);
     var fields = envValue.split(".");

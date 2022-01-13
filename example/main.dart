@@ -1,4 +1,5 @@
 import 'package:dartfx/dartfx.dart';
+import 'package:args/args.dart';
 
 ///
 /// Author: YoungChan
@@ -9,7 +10,13 @@ import 'package:dartfx/dartfx.dart';
 /// Copyright: ©2022 NEW CORE Technology Co. Ltd.
 ///
 
-void main() {
-  var result = fx("1+(2+3)*7-4");
+void main(List<String> arguments) {
+  final parser = ArgParser()
+    ..addFlag('expression', negatable: false, abbr: 'e');
+
+  ArgResults argResults = parser.parse(arguments);
+  var expression = argResults.rest.first;
+
+  var result = fx(expression);
   print('Fx result: $result');
 }

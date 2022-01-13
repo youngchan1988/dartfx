@@ -1194,7 +1194,8 @@ class AstRuntimeVisitor implements AstVisitor<Map> {
     if (node.operator.type == TokenType.PLUS_PLUS ||
         node.operator.type == TokenType.MINUS_MINUS ||
         node.operator.type == TokenType.BANG ||
-        node.operator.type == TokenType.MINUS) {
+        node.operator.type == TokenType.MINUS ||
+        node.operator.type == TokenType.TILDE) {
       map = _buildPrefixExpression(
           node.operator.lexeme, true, _safelyVisitNode(node.operand));
     }

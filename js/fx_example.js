@@ -7,6 +7,6 @@
  * @Copyright: ©2022 NEW CORE Technology Co. Ltd.
  */
 require('./d8');
-require('./fx');
+require('./fx_js');
 
 console.log(fx("1+2*3-2"));
