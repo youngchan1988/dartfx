@@ -57,7 +57,7 @@ class AstContext {
     }
 
     ///如果没有匹配解析器，执行默认解析器
-    return Resolver.instance!.resolve(this, executor, target,
+    return Resolver.instance.resolve(this, executor, target,
         property: property, arguments: arguments);
   }
 

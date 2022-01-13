@@ -2,6 +2,7 @@
 
 import 'package:analyzer/error/listener.dart';
 import 'package:analyzer/src/string_source.dart';
+import 'package:dartfx/dartfx.dart';
 import 'package:dartfx/src/runtime/ast_context.dart';
 import 'package:dartfx/src/util/logger.dart';
 import 'ast_impl/ast.dart';
@@ -56,14 +57,30 @@ dynamic executeExpressionWithEnv({required String expression, Map? envs}) {
   return executor.execute(astContext, runtime.Program.fromAst(ast)!.body!);
 }
 
+///设置自定义函数回调，初始化时调用一次
+void fxSetFunctionApply(FunctionApply functionApply) {
+  Resolver.instance.functionApply = functionApply;
+}
+
+// 运行公式表达式并返回结果
 dynamic fx(String expression) {
   return executeExpression(expression: expression);
 }
 
+///
+/// 运行包含变量声明（$...$）的公式表达式，并返回结果
+/// expression: 公式表达式
+/// envs: 变量值对象{}
+///
 dynamic fxWithEnvs(String expression, Map envs) {
   return executeExpressionWithEnv(expression: expression, envs: envs);
 }
 
+///
+/// 运行包含变量声明（$...$）的赋值表达式，赋值的结果更新在`envs`中
+/// expression: 赋值公式表达式，如：$a.b$=1+2+3
+/// envs: 变量值对象{}
+///
 dynamic fxAssignment(String expression, Map envs,
     {void Function(List<String>)? leftEnvFields}) {
   var program = parseProgram(content: expression);

@@ -26,7 +26,9 @@ import 'internal_function/substring_resolver.dart';
 import 'internal_function/replacestring_resolver.dart';
 import 'internal_function/regmatch_resolver.dart';
 
-class Resolver implements AstResolver {
+typedef FunctionApply = dynamic Function(String functionName, List arguments);
+
+class Resolver extends AstResolver {
   Resolver() {
     //初始化Parser map
     addResolver(StringResolver())
@@ -59,6 +61,8 @@ class Resolver implements AstResolver {
 
   static Resolver? _instance;
 
+  FunctionApply? functionApply;
+
   final _resolverList = <AstResolver>[];
 
   Resolver addResolver(AstResolver resolver) {
@@ -84,7 +88,18 @@ class Resolver implements AstResolver {
             property: property, arguments: arguments);
       }
     }
-    logError(_tag,
-        "Didn't found parser for target: $target, or property: $property");
+    if (functionApply != null && target is String && property == null) {
+      var argumentsValue = [];
+      if (arguments != null) {
+        for (var arg in arguments) {
+          argumentsValue.add(executor.execute(astContext, arg));
+        }
+      }
+      return functionApply!(target, argumentsValue);
+    }
+    warn(
+        object: this,
+        message:
+            "No default resolver for target: $target, or property: $property");
   }
 }

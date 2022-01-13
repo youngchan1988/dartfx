@@ -8,6 +8,13 @@ void main() {
   js.context['jsfx'] = fx;
   js.context['jsfxWithEnvs'] = jsfxWithEnvs;
   js.context['jsfxAssignment'] = jsfxAssignment;
+  js.context['jsSetFunctionApply'] = jsSetFunctionApply;
+}
+
+dynamic jsSetFunctionApply(JsFunction jsFunction) {
+  fxSetFunctionApply((name, arguments) {
+    return jsFunction.apply([name, ...arguments]);
+  });
 }
 
 dynamic jsfxWithEnvs(String expression, JsObject envs) {

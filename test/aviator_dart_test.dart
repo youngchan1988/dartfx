@@ -336,4 +336,19 @@ void main() {
       expect(result, "hello13.8");
     });
   });
+
+  group('Test function apply', () {
+    setUp(() {
+      fxSetFunctionApply((name, arguments) {
+        if (name == 'RMB') {
+          return '¥${arguments.first}';
+        }
+      });
+    });
+
+    test('Test RMB', () {
+      var result = fx('RMB(100)');
+      expect(result, "¥100");
+    });
+  });
 }

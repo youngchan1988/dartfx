@@ -2,12 +2,12 @@
 * Author: YoungChan
 * Date: 2022-01-10 19:31:26
 * LastEditors: YoungChan
-* LastEditTime: 2022-01-13 19:33:32
+* LastEditTime: 2022-01-14 00:57:46
 * Description: description
 * Copyright: ©2022 NEW CORE Technology Co. Ltd.
 */
 import './d8';
-import { fx, fxWithEnvs, fxAssignment } from './jsfx';
+import { fx, fxWithEnvs, fxAssignment, fxSetFunctionApply } from './jsfx';
 
 test('Test arithmetic', () => {
 	var result = fx('1+(2+3)*7 - 4/2');
@@ -332,4 +332,16 @@ test('Test MAX and SUM and INTFLOOR and FIXED', () => {
 		'"hello" + FIXED(MAX(SUM(\$column\$), 1.2, 8 + 2, INTFLOOR(10.9)), 2)',
 		envs);
 	expect(result).toBe("hello13.8");
+});
+
+test('Test RMB', () => {
+	fxSetFunctionApply((...args) => {
+		var funcName = args[0];
+		if (funcName == 'RMB') {
+			var value = args[1];
+			return `¥${value}`;
+		}
+	});
+	var result = fx('RMB(100)');
+	expect(result).toBe("¥100");
 });

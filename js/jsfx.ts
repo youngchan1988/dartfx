@@ -2,7 +2,7 @@
 * Author: YoungChan
 * Date: 2022-01-12 15:45:05
 * LastEditors: YoungChan
-* LastEditTime: 2022-01-13 09:46:51
+* LastEditTime: 2022-01-14 00:52:22
 * Description: description
 * Copyright: ©2022 NEW CORE Technology Co. Ltd.
 */
@@ -12,6 +12,7 @@ import './fx.js';
 declare var jsfx: Function;
 declare var jsfxWithEnvs: Function;
 declare var jsfxAssignment: Function;
+declare var jsSetFunctionApply: Function;
 
 // 运行公式表达式并返回结果
 export function fx(expression: string): any {
@@ -34,4 +35,9 @@ export function fxWithEnvs(expression: string, envs: object): any {
 */
 export function fxAssignment(expression: string, envs: object): any {
 	return jsfxAssignment(expression, envs);
+}
+
+//设置自定义函数处理，初始化时调用一次
+export function fxSetFunctionApply(functionApply: Function) {
+	jsSetFunctionApply(functionApply);
 }

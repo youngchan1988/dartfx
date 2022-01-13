@@ -13,6 +13,7 @@
 - `fx(expression: string): any`: 运行公式表达式
 - `fxWithEnvs(expression: string, envs: object): any`: 运行含变量的公式表达式
 - `fxAssignment(expression: string, envs: object): any`: 运行赋值公式表达式
+- `fxSetFunctionApply(functionApply: Function)`: 设置自定义函数处理
 
 ```typescript
 var result = fx('1+(2+3)*7 - 4/2');
@@ -24,6 +25,15 @@ var envs = {
 var result = fxWithEnvs('\$43859.currency\$+\$43859.unitName\$', envs);
 
 var result = fxAssignment('\$43858.message\$=\$43859.currency\$+\$43859.unitName\$', envs);
+
+fxSetFunctionApply((...args) => {
+	var funcName = args[0];
+	if (funcName == 'RMB') {
+		var value = args[1];
+		return `¥${value}`;
+	}
+});
+var result = fx('RMB(100)');
 
 ```
 

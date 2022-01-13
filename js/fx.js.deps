@@ -721,7 +721,6 @@ file:///Users/youngchan/Project/newcore/dartfx/lib/src/parser/type_info.dart
 file:///Users/youngchan/Project/newcore/dartfx/lib/src/parser/type_info_impl.dart
 file:///Users/youngchan/Project/newcore/dartfx/lib/src/parser/util.dart
 file:///Users/youngchan/Project/newcore/dartfx/lib/src/parser/value_kind.dart
-file:///Users/youngchan/Project/newcore/dartfx/lib/src/resolver/comm_resolver.dart
 file:///Users/youngchan/Project/newcore/dartfx/lib/src/resolver/internal_function/abs_resolver.dart
 file:///Users/youngchan/Project/newcore/dartfx/lib/src/resolver/internal_function/average_resolver.dart
 file:///Users/youngchan/Project/newcore/dartfx/lib/src/resolver/internal_function/fixed_resolver.dart
@@ -742,6 +741,7 @@ file:///Users/youngchan/Project/newcore/dartfx/lib/src/resolver/iterable_resolve
 file:///Users/youngchan/Project/newcore/dartfx/lib/src/resolver/list_resolver.dart
 file:///Users/youngchan/Project/newcore/dartfx/lib/src/resolver/map_resolver.dart
 file:///Users/youngchan/Project/newcore/dartfx/lib/src/resolver/num_resolver.dart
+file:///Users/youngchan/Project/newcore/dartfx/lib/src/resolver/resolver.dart
 file:///Users/youngchan/Project/newcore/dartfx/lib/src/resolver/string_resolver.dart
 file:///Users/youngchan/Project/newcore/dartfx/lib/src/runtime/ast_context.dart
 file:///Users/youngchan/Project/newcore/dartfx/lib/src/runtime/ast_resolver.dart
