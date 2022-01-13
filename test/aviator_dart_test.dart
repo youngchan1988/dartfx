@@ -187,4 +187,153 @@ void main() {
       expect(envs["43858"]!["number"], 400);
     });
   });
+
+  group('Test internal function', () {
+    test('Test SUM', () {
+      var envs = {
+        "column": [1, 2, 0.3, 4.5, 6]
+      };
+      var result = fxWithEnvs('SUM(\$column\$)', envs);
+      expect(result, 13.8);
+    });
+
+    test('Test AVERAGE', () {
+      var envs = {
+        "column": [1, 2, 3, 4, 6]
+      };
+      var result = fxWithEnvs('AVERAGE(\$column\$)', envs);
+      expect(result, 3.2);
+    });
+
+    test('Test MAX', () {
+      var result = fx('MAX(1, 2, 6, 4, 5.2)');
+      expect(result, 6);
+
+      result = fx('MAX(-1, -2, -6, -4, -5.2)');
+      expect(result, -1);
+    });
+
+    test('Test MIN', () {
+      var result = fx('MIN(1, 2, 6, 4, 5.2)');
+      expect(result, 1);
+
+      result = fx('MIN(-1, -2, 6, -4, -5.2)');
+      expect(result, -5.2);
+    });
+
+    test('Test ABS', () {
+      var result = fx('ABS(10)');
+      expect(result, 10);
+
+      result = fx('ABS(-10)');
+      expect(result, 10);
+    });
+
+    test('Test ROUND', () {
+      var result = fx('ROUND(123.45643234, 3)');
+      expect(result, 123.456);
+    });
+
+    test('Test FIXED', () {
+      var result = fx('FIXED(123.45643234, 2)');
+      expect(result, "123.46");
+    });
+
+    test('Test INTFLOOR', () {
+      var result = fx('INTFLOOR(123.66)');
+      expect(result, 123);
+    });
+
+    test('Test INTCEIL', () {
+      var result = fx('INTCEIL(123.12)');
+      expect(result, 124);
+    });
+
+    test('Test VALUE', () {
+      var result = fx('VALUE("100")');
+      expect(result, 100);
+
+      result = fx('VALUE("100.23")');
+      expect(result, 100.23);
+    });
+
+    test('Test TIMESTAMP', () {
+      var result =
+          fx('TIMESTAMP("2022/01/13 20:13:22", "yyyy/MM/dd HH:mm:ss")');
+      var dateTime = DateTime.fromMillisecondsSinceEpoch(result);
+      expect(dateTime.year, 2022);
+      expect(dateTime.month, 1);
+      expect(dateTime.day, 13);
+      expect(dateTime.hour, 20);
+      expect(dateTime.minute, 13);
+      expect(dateTime.second, 22);
+    });
+
+    test('Test TIMEFORMAT', () {
+      var result = fx('TIMEFORMAT(1642059246000, "yyyy/MM/dd HH:mm:ss")');
+      expect(result, "2022/01/13 15:34:06");
+    });
+
+    test('Test ISEMPTY', () {
+      var result = fx('ISEMPTY("hello")');
+      expect(result, false);
+
+      result = fx('ISEMPTY("")');
+      expect(result, true);
+
+      var listEnvs = {
+        "column": [1, 2, 0.3, 4.5, 6],
+        "row": [],
+      };
+      result = fxWithEnvs('ISEMPTY(\$column\$)', listEnvs);
+      expect(result, false);
+      result = fxWithEnvs('ISEMPTY(\$row\$)', listEnvs);
+      expect(result, true);
+
+      var mapEnvs = {
+        "object": {
+          "name": "Jeniffer",
+        },
+        "none": {},
+      };
+      result = fxWithEnvs('ISEMPTY(\$object\$)', mapEnvs);
+      expect(result, false);
+      result = fxWithEnvs('ISEMPTY(\$none\$)', mapEnvs);
+      expect(result, true);
+    });
+
+    test('Test SUBSTRING', () {
+      var result = fx('SUBSTRING("hello world", 3)');
+      expect(result, "lo world");
+
+      result = fx('SUBSTRING("hello world", 3, 4)');
+      expect(result, "lo w");
+    });
+
+    test('Test REPLACESTRING', () {
+      var result = fx('REPLACESTRING("hello world", "world", "newcore")');
+      expect(result, "hello newcore");
+    });
+
+    test('Test REGMATCH', () {
+      var reg = r"1[0-9]\d{9}$";
+      var result = fx('REGMATCH("18721788876", r"$reg")');
+      expect(result, true);
+
+      result = fx('REGMATCH("zhan.yanyang@xinheyun.com", r"$reg")');
+      expect(result, false);
+    });
+  });
+
+  group('Test composite function', () {
+    test('Test MAX and SUM and INTFLOOR and FIXED', () {
+      var envs = {
+        "column": [1, 2, 0.3, 4.5, 6]
+      };
+      var result = fxWithEnvs(
+          '"hello" + FIXED(MAX(SUM(\$column\$), 1.2, 8 + 2, INTFLOOR(10.9)), 2)',
+          envs);
+      expect(result, "hello13.8");
+    });
+  });
 }

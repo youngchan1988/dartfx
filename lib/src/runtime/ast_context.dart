@@ -6,7 +6,7 @@
 ///Description: file content
 ///
 
-import 'package:dartfx/src/resolver/comm_resolver.dart';
+import 'package:dartfx/src/resolver/resolver.dart';
 
 import 'ast_resolver.dart';
 import 'ast_runtime_node.dart';
@@ -41,7 +41,7 @@ class AstContext {
   }
 
   ///解析表达式
-  dynamic parse(
+  dynamic resolve(
     AstRuntimeExecutor executor,
     dynamic target, {
     String? property,
@@ -57,7 +57,7 @@ class AstContext {
     }
 
     ///如果没有匹配解析器，执行默认解析器
-    return CommonResolver.instance!.resolve(this, executor, target,
+    return Resolver.instance!.resolve(this, executor, target,
         property: property, arguments: arguments);
   }
 

@@ -506,7 +506,7 @@ class DefaultAstRuntimeExecutor implements AstRuntimeExecutor {
   @override
   dynamic executeInstanceCreationExpression(
       AstContext astContext, InstanceCreationExpression expression) {
-    return astContext.parse(this, expression.callee?.typeName?.name,
+    return astContext.resolve(this, expression.callee?.typeName?.name,
         arguments: expression.arguments, property: expression.callee?.name);
   }
 
@@ -548,7 +548,7 @@ class DefaultAstRuntimeExecutor implements AstRuntimeExecutor {
         return methodFunc.call(params: params);
       } else {
         //调用拓展解析器尝试解析
-        return astContext.parse(this, methodName, arguments: argumentList);
+        return astContext.resolve(this, methodName, arguments: argumentList);
       }
     } else if (callee is MemberExpression) {
       if (callee.target == null) {
@@ -564,7 +564,7 @@ class DefaultAstRuntimeExecutor implements AstRuntimeExecutor {
         if (realTarget == null) {
           if (callee.target is SimpleIdentifier) {
             //调用拓展解析器尝试解析
-            return astContext!.parse(
+            return astContext!.resolve(
                 this, (callee.target as SimpleIdentifier).name,
                 property: callee.property, arguments: argumentList);
           } else {
@@ -572,7 +572,7 @@ class DefaultAstRuntimeExecutor implements AstRuntimeExecutor {
           }
         } else {
           //调用拓展解析器尝试解析
-          return astContext!.parse(this, realTarget,
+          return astContext!.resolve(this, realTarget,
               property: callee.property, arguments: argumentList);
         }
       }
@@ -626,9 +626,9 @@ class DefaultAstRuntimeExecutor implements AstRuntimeExecutor {
     var target = astContext.findVariable(identifier.prefix)?.value;
     //调用拓展解析器尝试解析
     if (target != null) {
-      return astContext.parse(this, target, property: identifier.identifier);
+      return astContext.resolve(this, target, property: identifier.identifier);
     } else {
-      return astContext.parse(this, identifier.prefix,
+      return astContext.resolve(this, identifier.prefix,
           property: identifier.identifier);
     }
   }
@@ -641,7 +641,7 @@ class DefaultAstRuntimeExecutor implements AstRuntimeExecutor {
       return null;
     }
     //调用拓展解析器尝试解析
-    return astContext!.parse(this, target, property: propertyAccess.name);
+    return astContext!.resolve(this, target, property: propertyAccess.name);
   }
 
   @override

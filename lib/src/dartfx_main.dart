@@ -1,16 +1,15 @@
 // TODO: Put public facing types in this file.
 
-import 'dart:js';
-
 import 'package:analyzer/error/listener.dart';
 import 'package:analyzer/src/string_source.dart';
-import 'package:dartfx/dartfx.dart';
 import 'package:dartfx/src/runtime/ast_context.dart';
 import 'package:dartfx/src/util/logger.dart';
 import 'ast_impl/ast.dart';
 import 'ast_impl/ast_runtime_visitor.dart';
+import 'lexer/expression_lexer.dart';
 import 'parser/ast_builder.dart';
 import 'parser/parser.dart';
+import 'runtime/ast_runtime.dart';
 import 'runtime/ast_runtime_node.dart' as runtime;
 
 const _tag = "dartfx";

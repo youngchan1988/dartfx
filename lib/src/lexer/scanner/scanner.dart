@@ -1284,13 +1284,14 @@ abstract class Scanner {
     while (!identical(next, quoteChar)) {
       if (identical(next, $BACKSLASH)) {
         next = advance();
-      } else if (identical(next, $$)) {
-        if (!asciiOnly) handleUnicode(start);
-        next = tokenizeStringInterpolation(start, asciiOnly);
-        start = scanOffset;
-        asciiOnly = true;
-        continue;
       }
+      //  else if (identical(next, $$)) {
+      //   if (!asciiOnly) handleUnicode(start);
+      //   next = tokenizeStringInterpolation(start, asciiOnly);
+      //   start = scanOffset;
+      //   asciiOnly = true;
+      //   continue;
+      // }
       if (next <= $CR &&
           (identical(next, $LF) ||
               identical(next, $CR) ||
@@ -1429,15 +1430,15 @@ abstract class Scanner {
     int unicodeStart = start;
     int next = advance(); // Advance past the (last) quote (of three).
     while (!identical(next, $EOF)) {
-      if (identical(next, $$)) {
-        if (!asciiOnlyLine) handleUnicode(unicodeStart);
-        next = tokenizeStringInterpolation(start, asciiOnlyString);
-        start = scanOffset;
-        unicodeStart = start;
-        asciiOnlyString = true; // A new string token is created for the rest.
-        asciiOnlyLine = true;
-        continue;
-      }
+      // if (identical(next, $$)) {
+      //   if (!asciiOnlyLine) handleUnicode(unicodeStart);
+      //   next = tokenizeStringInterpolation(start, asciiOnlyString);
+      //   start = scanOffset;
+      //   unicodeStart = start;
+      //   asciiOnlyString = true; // A new string token is created for the rest.
+      //   asciiOnlyLine = true;
+      //   continue;
+      // }
       if (identical(next, quoteChar)) {
         next = advance();
         if (identical(next, quoteChar)) {
