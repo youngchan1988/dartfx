@@ -40,7 +40,7 @@ The operator doc : [Operators | Dart](https://dart.dev/guides/language/language-
 
 ```
 dependencies:
-    dartfx: ^1.0.3
+    dartfx: ^1.0.4
 ```
 
 To build `jsfx`.

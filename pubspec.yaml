@@ -1,6 +1,6 @@
 name: dartfx
 description: A simple lightly function expression runer for dart and javascript.
-version: 1.0.3
+version: 1.0.4
 
 environment:
   sdk: ">=2.15.1 <3.0.0"

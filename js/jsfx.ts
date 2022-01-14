@@ -8,7 +8,7 @@ import './fx.js';
 declare var jsfx: Function;
 declare var jsfxWithEnvs: Function;
 declare var jsfxAssignment: Function;
-declare var jsSetFunctionApply: Function;
+declare var jsSetFunctionResolver: Function;
 
 // 运行公式表达式并返回结果
 export function fx(expression: string): any {
@@ -34,6 +34,6 @@ export function fxAssignment(expression: string, envs: object): any {
 }
 
 //设置自定义函数处理，初始化时调用一次
-export function fxSetFunctionApply(functionApply: Function) {
-	jsSetFunctionApply(functionApply);
+export function fxSetFunctionResolver(functionResolver: Function) {
+	jsSetFunctionResolver(functionResolver);
 }

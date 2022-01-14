@@ -3,7 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import './d8';
-import { fx, fxWithEnvs, fxAssignment, fxSetFunctionApply } from './jsfx';
+import { fx, fxWithEnvs, fxAssignment, fxSetFunctionResolver } from './jsfx';
 
 test('Test arithmetic', () => {
 	var result = fx('1+(2+3)*7 - 4/2');
@@ -331,7 +331,7 @@ test('Test MAX and SUM and INTFLOOR and FIXED', () => {
 });
 
 test('Test RMB', () => {
-	fxSetFunctionApply((...args) => {
+	fxSetFunctionResolver((...args) => {
 		var funcName = args[0];
 		if (funcName == 'RMB') {
 			var value = args[1];

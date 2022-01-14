@@ -343,7 +343,7 @@ void main() {
 
   group('Test function apply', () {
     setUp(() {
-      fxSetFunctionApply((name, arguments) {
+      fxSetFunctionResolver((name, arguments) {
         if (name == 'RMB') {
           return '¥${arguments.first}';
         }

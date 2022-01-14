@@ -30,7 +30,8 @@ import 'internal_function/substring_resolver.dart';
 import 'internal_function/replacestring_resolver.dart';
 import 'internal_function/regmatch_resolver.dart';
 
-typedef FunctionApply = dynamic Function(String functionName, List arguments);
+typedef FunctionResolver = dynamic Function(
+    String functionName, List arguments);
 
 class Resolver extends AstResolver {
   Resolver() {
@@ -65,7 +66,7 @@ class Resolver extends AstResolver {
 
   static Resolver? _instance;
 
-  FunctionApply? functionApply;
+  FunctionResolver? functionApply;
 
   final _resolverList = <AstResolver>[];
 

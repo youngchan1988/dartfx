@@ -17,7 +17,7 @@ import 'runtime/ast_runtime_node.dart' as runtime;
 
 const _tag = "dartfx";
 
-ProgramImpl parseProgram({required String content}) {
+ProgramImpl _parseProgram({required String content}) {
   var source = StringSource(content, '');
   var errorCollector = RecordingErrorListener();
   var lexer = ExpressionLexer(expression: content);
@@ -36,7 +36,7 @@ ProgramImpl parseProgram({required String content}) {
 
 dynamic executeExpression(
     {required String expression, dynamic Function(String)? envValue}) {
-  var program = parseProgram(content: expression);
+  var program = _parseProgram(content: expression);
   var visitor = AstRuntimeVisitor();
   var ast = program.accept(visitor);
   var executor = DefaultAstRuntimeExecutor(envValue: envValue);
@@ -45,7 +45,7 @@ dynamic executeExpression(
 }
 
 dynamic executeExpressionWithEnv({required String expression, Map? envs}) {
-  var program = parseProgram(content: expression);
+  var program = _parseProgram(content: expression);
   var visitor = AstRuntimeVisitor();
   var ast = program.accept(visitor);
   var executor = DefaultAstRuntimeExecutor(envValue: (envValue) {
@@ -60,8 +60,8 @@ dynamic executeExpressionWithEnv({required String expression, Map? envs}) {
 }
 
 ///设置自定义函数回调，初始化时调用一次
-void fxSetFunctionApply(FunctionApply functionApply) {
-  Resolver.instance.functionApply = functionApply;
+void fxSetFunctionResolver(FunctionResolver functionResolver) {
+  Resolver.instance.functionApply = functionResolver;
 }
 
 // 运行公式表达式并返回结果
@@ -85,7 +85,7 @@ dynamic fxWithEnvs(String expression, Map envs) {
 ///
 dynamic fxAssignment(String expression, Map envs,
     {void Function(List<String>)? leftEnvFields}) {
-  var program = parseProgram(content: expression);
+  var program = _parseProgram(content: expression);
 
   var visitor = AstRuntimeVisitor();
   var ast = program.accept(visitor);

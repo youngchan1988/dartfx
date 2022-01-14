@@ -1,10 +1,16 @@
+## 1.0.4
+
+- Update License.
+- Rename `fxSetFunctionApply` to `fxSetFunctionResolver`.
+
 ## 1.0.3
 
 - Support custom resolver.
+- Add `fxSetFunctionApply((List args){})` method.
 
 ## 1.0.2
 
-- Add some internal function
+- Add some internal functions
   - `num ABS(num a)`
   - `double AVERAGE(List<num> list)`
   - `String FIXED(num a, int digit)`
@@ -20,11 +26,12 @@
   - `String TIMEFORMAT(int timestamp, String pattern)`
   - `int TIMESTAMP(String dateString, String pattern)`
   - `num VALUE(String a)`
+- Add `fxAssignment(string, map)` method.
 
 ## 1.0.1
 
-- Support double  `$`  variable. eg: `$user.name$`
-- add `fx(string)` 和 `fxWithEnvs(string, map)` method
-- Unit Test Case
-- Build javascript library： `jsfx`
-- JS Unit Test Case
+- Support double  `$`  variable. eg: `$user.name$`.
+- Add `fx(string)` 和 `fxWithEnvs(string, map)` method.
+- Unit Test Case.
+- Build javascript library： `jsfx`.
+- JS Unit Test Case.
