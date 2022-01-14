@@ -1,10 +1,6 @@
-///
-/// ProjectName: flutterhot
-/// Author: youngchan
-/// CreateDate: 2020/12/18 6:05 PM
-/// Copyright: ©2020 NEW CORE Technology Co. Ltd. All rights reserved.
-/// Description: 日志工具
-///
+// Copyright (c) 2022, the dartfx project authors. Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
 
 import "package:logger/logger.dart";
 

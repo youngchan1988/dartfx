@@ -1,11 +1,12 @@
-///
-/// Author: YoungChan
-/// Date: 2022-01-05 11:44:13
-/// LastEditors: YoungChan
-/// LastEditTime: 2022-01-05 11:44:14
-/// Description: description
-/// Copyright: ©2022 NEW CORE Technology Co. Ltd.
-///
+// Copyright (c) 2013, the Dart project authors. Please see the AUTHORS file
+// for details (https://github.com/dart-lang/sdk/blob/main/AUTHORS). All rights
+//reserved. Use of this source code is governed by a BSD-style license that can
+// be found in the LICENSE file.
+
+// Modified by the dartfx project authors.
+// Copyright (c) 2022, the dartfx project authors. Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
 
 import 'string_token.dart';
 import 'token.dart';

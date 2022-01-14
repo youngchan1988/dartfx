@@ -2,7 +2,10 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:collection';
+// Modified by the dartfx project authors.
+// Copyright (c) 2022, the dartfx project authors. Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
 
 import 'package:dartfx/src/ast/line_info.dart';
 import 'package:dartfx/src/ast/nullability_suffix.dart';
@@ -13,7 +16,6 @@ import '../ast/element.dart';
 import '../ast/ast.dart';
 import 'display_string_builder.dart';
 import 'element_type_provider.dart';
-import 'scope.dart';
 import 'type.dart';
 import 'utilities_collection.dart';
 

@@ -1,17 +1,13 @@
+// Copyright (c) 2022, the dartfx project authors. Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 import 'package:dartfx/src/runtime/ast_context.dart';
 import 'package:dartfx/src/runtime/ast_runtime_node.dart';
 import 'package:dartfx/src/runtime/ast_resolver.dart';
 import 'package:dartfx/src/runtime/ast_runtime.dart';
 import 'package:dartfx/src/runtime/ast_runtime_executor.dart';
 import 'package:dartfx/src/util/logger.dart';
-
-///
-///Author: YoungChan
-///Date: 2020-07-07 14:53:38
-///LastEditors: YoungChan
-///LastEditTime: 2020-10-28 14:30:41
-///Description: Map 解析
-///
 
 class MapResolver extends AstResolver {
   static const _tag = "MapParser";

@@ -1,17 +1,11 @@
+// Copyright (c) 2022, the dartfx project authors. Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 import 'package:dartfx/src/runtime/ast_context.dart';
 import 'package:dartfx/src/runtime/ast_resolver.dart';
 import 'package:dartfx/src/runtime/ast_runtime_node.dart';
 import 'package:dartfx/src/runtime/ast_runtime_executor.dart';
-
-///
-/// Author: YoungChan
-/// Date: 2022-01-13 14:05:56
-/// LastEditors: YoungChan
-/// LastEditTime: 2022-01-13 14:05:56
-/// Description: VALUE 函数，返回字符串参数转换的数字
-/// `num VALUE(String a)`
-/// Copyright: ©2022 NEW CORE Technology Co. Ltd.
-///
 
 class FuncValueResolver extends AstResolver {
   @override

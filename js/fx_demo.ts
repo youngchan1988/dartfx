@@ -1,19 +1,6 @@
-/*
-* Author: YoungChan
-* Date: 2022-01-12 17:19:36
-* LastEditors: YoungChan
-* LastEditTime: 2022-01-12 17:19:42
-* Description: description
-* Copyright: ©2022 NEW CORE Technology Co. Ltd.
-*/
-/*
-* Author: YoungChan
-* Date: 2022-01-12 17:01:51
-* LastEditors: YoungChan
-* LastEditTime: 2022-01-12 17:15:36
-* Description: description
-* Copyright: ©2022 NEW CORE Technology Co. Ltd.
-*/
+// Copyright (c) 2022, the dartfx project authors. Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
 
 import './d8.js';
 import { fx } from './jsfx';

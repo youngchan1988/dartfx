@@ -1,18 +1,12 @@
+// Copyright (c) 2022, the dartfx project authors. Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 import 'package:dartfx/src/runtime/ast_context.dart';
 import 'package:dartfx/src/runtime/ast_resolver.dart';
 import 'package:dartfx/src/runtime/ast_runtime_node.dart';
 import 'package:dartfx/src/runtime/ast_runtime_executor.dart';
 import 'package:intl/intl.dart';
-
-///
-/// Author: YoungChan
-/// Date: 2022-01-13 15:13:52
-/// LastEditors: YoungChan
-/// LastEditTime: 2022-01-13 15:13:53
-/// Description: TIMEFORMAT 函数，返回时间戳参数格式化后的内容
-/// `String TIMEFORMAT(int timestamp, String pattern)`
-/// Copyright: ©2022 NEW CORE Technology Co. Ltd.
-///
 
 class FuncTimeFormatResolver extends AstResolver {
   @override

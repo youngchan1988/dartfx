@@ -1,17 +1,11 @@
+// Copyright (c) 2022, the dartfx project authors. Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 import 'package:dartfx/src/runtime/ast_context.dart';
 import 'package:dartfx/src/runtime/ast_resolver.dart';
 import 'package:dartfx/src/runtime/ast_runtime_node.dart';
 import 'package:dartfx/src/runtime/ast_runtime_executor.dart';
-
-///
-/// Author: YoungChan
-/// Date: 2022-01-13 15:43:31
-/// LastEditors: YoungChan
-/// LastEditTime: 2022-01-13 15:43:32
-/// Description: SUBSTRING 函数， 返回子字符串
-/// `String SUBSTRING(String s, int start, [int length])`
-/// Copyright: ©2022 NEW CORE Technology Co. Ltd.
-///
 
 class FuncSubstringResolver extends AstResolver {
   @override

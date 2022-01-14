@@ -1,17 +1,11 @@
-import 'package:dartfx/src/util/logger.dart';
+// Copyright (c) 2022, the dartfx project authors. Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
 
+import 'package:dartfx/src/util/logger.dart';
 import 'ast_context.dart';
 import 'ast_runtime_node.dart';
 import 'ast_runtime_executor.dart';
-
-///
-/// ProjectName: flutterhot
-/// Author: youngchan
-/// CreateDate: 2020/12/22 10:36 AM
-/// Copyright: ©2020 NEW CORE Technology Co. Ltd. All rights reserved.
-/// Description: Runtime 实现
-///
-///
 
 typedef EnvValue = dynamic Function(String);
 

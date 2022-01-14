@@ -1,35 +1,51 @@
-<!-- 
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+![1642129461676.png](image/README/1642129420677.png)
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages). 
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages). 
--->
+> This project was developed on [dart-analyzer](https://github.com/dart-lang/sdk/tree/main/pkg/analyzer)
 
 ## Features
 
-公式计算，支持:
+Support dart and javascript both.
 
-- 双 $ 变量处理
-- 运算表达式
-- TODO： 自定义函数
+### Operators
+
+```dart
++, -, *, /, ~/, %, -(Negative), >, <, ==, >=, <=, !=, &&, ||, !, &, |,
+~, ^, >>, <<, =, +=, -=, &=, |=, ^=, >>=, <<=, expr1 ? expr2 : expr3
+```
+
+The operator doc : [Operators | Dart](https://dart.dev/guides/language/language-tour#operators)
+
+### Internal Functions
+
+| Function                                                      | Comment                                                                                                                    |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `num ABS(num a)`                                              | Return absolutely value of number.                                                                                         |
+| `num SUM(List<num> list)`                                     | Return sum value of a number set.                                                                                          |
+| `double AVERAGE(List<num> list)`                              | Return average value of a number set.                                                                                      |
+| `num ROUND(num value, int digit)`                             | Return number value closest to this and limit digits after the decimal point.                                              |
+| `String FIXED(num value, int digit)`                          | Return string value closest to this and limit digits after the decimal point.                                              |
+| `int INTCEIL(num value)`                                      | Return the least integer value no smaller than this.                                                                       |
+| `int INTFLOOR(num value)`                                     | Return the greatest integer value no greater than this.                                                                    |
+| `bool ISEMPTY(dynamic value)`                                 | Return value is empty or not. The value should be one of String, List or Map.                                              |
+| `num MAX(num a, num b, [num c, ...])`                         | Return the max value of number arguments.                                                                                  |
+| `num MIN(num a, num b, [num c, ...])`                         | Return the min value of number arguments.                                                                                  |
+| `num VALUE(String a)`                                         | Convert string to number.                                                                                                  |
+| `bool REGMATCH(String source, r{String reg})`                 | Return the string is match regular rule, true of false. The `reg` argument need a prefix char `r`. eg: `r"1[0-9]\d{9}$"` . |
+| `String SUBSTRING(String s, int start, [int length])`         | Return sub string.                                                                                                         |
+| `String REPLACESTRING(String soruce, String old, String new)` | Replace sub string by a new one. And return the new string.                                                                |
+| `String TIMEFORMAT(int timestamp, String pattern)`            | Return the formated timestamp. The `pattern` could be "yyyy-MM-dd HH:mm:ss".                                               |
+| `int TIMESTAMP(String dateString, String pattern)`            | Return the timestamp value that parse from a string.                                                                       |
 
 ## Getting started
 
-### Dart:
+```
+dependencies:
+    dartfx: ^1.0.3
+```
 
-git: [Mobile / dartfx · GitLab (newcoretech.com)](https://g.newcoretech.com/mobile/dartfx)
+To build `jsfx`.
 
-### JS:
-
-项目目录下执行： `make buildjs`
-
-成功后会在 `js` 目录下生成 `fx.js` 文件
+`make buildjs`
 
 ## Usage
 
@@ -38,17 +54,27 @@ git: [Mobile / dartfx · GitLab (newcoretech.com)](https://g.newcoretech.com/mob
 ```dart
 import 'package:dartfx/dartfx.dart';
 
-
-void expression(){
+void main(){
   var result = fx("1+(2+3)*7-4");
-  print('Fx result: $result');
-}
+  print('Fx output: $result');
 
-void expressionWithEnv(){
-  var result = fxWithEnvs('\\$43859.currency\\$+\\$43859.unitName\\$+\"number\"', {
-    "43858": {"unitName": "单位"},
-    "43859": {"currency": "100", "unitName": "人民币"}
+  var envs = {
+    "43858": {"message": "hello"},
+    "43859": {"currency": "100", "unitName": "Yuan"}
+  };
+
+  result = fxWithEnvs('\$43859.currency\$+\$43859.unitName\$', envs);
+  print('Fx output: $result');
+
+  result = fxAssignment('\$43858.message\$=\$43859.currency\$+\$43859.unitName\$', envs);
+  print('Fx output: ${envs["43858"]["message"]}');
+
+  fxSetFunctionApply((name, arguments) {
+    if (name == 'RMB') {
+      return '¥${arguments.first}';
+    }
   });
+  result = fx('RMB(100)');
   print('Fx output: $result');
 }
 ```
@@ -56,15 +82,29 @@ void expressionWithEnv(){
 ### JS:
 
 ```typescript
-import './fx';
+import { fx, fxWithEnvs, fxAssignment, fxSetFunctionApply } from './jsfx';
 
-declare var fx: Function;
-declare var fxWithEnvs: Function;
+console.log(fx('1+(2+3)*7 - 4/2'));
 
-console.log(fx("1+2*3-2"));
+var envs = {
+    "43858": { "message": "hello" },
+    "43859": { "currency": "100", "unitName": "Yuan" }
+};
+console.log(fxWithEnvs('\$43859.currency\$+\$43859.unitName\$', envs));
 
-console.log(fxWithEnvs("\\$43859.currency\\$+\\$43859.unitName\\$+\"number\"", {
-    "43858": {"unitName": "单位"},
-    "43859": {"currency": "100", "unitName": "人民币"}
-  }));
+var result = fxAssignment('\$43858.message\$=\$43859.currency\$+\$43859.unitName\$', envs);
+console.log(envs["43858"]["message"]);
+
+fxSetFunctionApply((...args) => {
+    var funcName = args[0];
+    if (funcName == 'RMB') {
+        var value = args[1];
+        return `¥${value}`;
+    }
+});
+console.log(fx('RMB(100)'));
 ```
+
+# License
+
+See [LICENSE](LICENSE)

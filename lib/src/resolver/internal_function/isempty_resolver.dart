@@ -1,21 +1,20 @@
+// Copyright (c) 2022, the dartfx project authors. Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 import 'package:dartfx/src/runtime/ast_context.dart';
 import 'package:dartfx/src/runtime/ast_resolver.dart';
 import 'package:dartfx/src/runtime/ast_runtime_node.dart';
 import 'package:dartfx/src/runtime/ast_runtime_executor.dart';
 
 ///
-/// Author: YoungChan
-/// Date: 2022-01-13 14:49:51
-/// LastEditors: YoungChan
-/// LastEditTime: 2022-01-13 14:49:51
-/// Description: ISEMPTY 函数，返回参数是否空,
+/// ISEMPTY 函数，返回参数是否空,
 /// 可以判断：
 /// - String
 /// - List
 /// - Map
 ///
 /// `bool ISEMPTY(dynamic a)`
-/// Copyright: ©2022 NEW CORE Technology Co. Ltd.
 ///
 
 class FuncIsEmptyResolver extends AstResolver {

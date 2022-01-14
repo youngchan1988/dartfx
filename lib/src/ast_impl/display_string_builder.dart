@@ -1,15 +1,12 @@
-///
-/// Author: YoungChan
-/// Date: 2022-01-05 16:34:12
-/// LastEditors: YoungChan
-/// LastEditTime: 2022-01-05 16:34:12
-/// Description: description
-/// Copyright: ©2022 NEW CORE Technology Co. Ltd.
-///
-// Copyright (c) 2020, the Dart project authors. Please see the AUTHORS file
+// Copyright (c) 2014, the Dart project authors. Please see the AUTHORS file
+// for details (https://github.com/dart-lang/sdk/blob/main/AUTHORS). All rights
+//reserved. Use of this source code is governed by a BSD-style license that can
+// be found in the LICENSE file.
+
+// Modified by the dartfx project authors.
+// Copyright (c) 2022, the dartfx project authors. Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
-
 import 'package:dartfx/src/ast/element.dart';
 import 'package:dartfx/src/ast/nullability_suffix.dart';
 import 'package:dartfx/src/ast/type.dart';

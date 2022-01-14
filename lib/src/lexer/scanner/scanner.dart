@@ -1,3 +1,12 @@
+// Copyright (c) 2016, the Dart project authors. Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
+// Modified by the dartfx project authors.
+// Copyright (c) 2022, the dartfx project authors. Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 import 'package:dartfx/src/lexer/tokens/error_token.dart';
 import 'package:dartfx/src/lexer/tokens/keyword_token.dart';
 import 'package:dartfx/src/lexer/tokens/string_token.dart';
@@ -8,15 +17,6 @@ import 'characters.dart';
 import '../tokens/token.dart';
 import '../tokens/token_constants.dart';
 import 'keyword_state.dart';
-
-///
-///Author: YoungChan
-///Date: 2021-12-30 10:55:27
-///LastEditors: YoungChan
-///LastEditTime: 2021-12-30 10:55:27
-///Description: Token scanner
-///Copyright: ©2022 NEW CORE Technology Co. Ltd.
-///
 
 abstract class Scanner {
   Scanner({this.inRecoveryOption = false}) {

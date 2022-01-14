@@ -1,11 +1,6 @@
-///
-/// Author: YoungChan
-/// Date: 2022-01-13 13:08:04
-/// LastEditors: YoungChan
-/// LastEditTime: 2022-01-13 13:09:39
-/// Description: description
-/// Copyright: ©2022 NEW CORE Technology Co. Ltd.
-///
+// Copyright (c) 2022, the dartfx project authors. Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
 
 ///格式化数字
 String formatNum(num? value,

@@ -1,16 +1,16 @@
-import 'dart:collection';
+// Copyright (c) 2016, the Dart project authors. Please see the AUTHORS file
+// for details (https://github.com/dart-lang/sdk/blob/main/AUTHORS). All rights
+//reserved. Use of this source code is governed by a BSD-style license that can
+// be found in the LICENSE file.
 
+// Modified by the dartfx project authors.
+// Copyright (c) 2022, the dartfx project authors. Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
+import 'dart:collection';
 import 'token.dart';
 import 'token_constants.dart';
-
-///
-/// Author: YoungChan
-/// Date: 2021-12-30 17:39:53
-/// LastEditors: YoungChan
-/// LastEditTime: 2021-12-30 17:39:53
-/// Description: description
-/// Copyright: ©2022 NEW CORE Technology Co. Ltd.
-///
 
 enum KeywordStyle {
   reserved,

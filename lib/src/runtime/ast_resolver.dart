@@ -1,11 +1,7 @@
-///
-///Author: YoungChan
-///Date: 2020-09-08 16:15:38
-///LastEditors: YoungChan
-///LastEditTime: 2020-10-13 17:00:51
-///Description: file content
-///Copyright: ©2020 NEW CORE Technology Co. Ltd.
-///
+// Copyright (c) 2022, the dartfx project authors. Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 import 'ast_runtime_node.dart';
 import 'ast_context.dart';
 import 'ast_runtime_executor.dart';

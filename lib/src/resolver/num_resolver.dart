@@ -1,15 +1,11 @@
+// Copyright (c) 2022, the dartfx project authors. Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 import 'package:dartfx/src/runtime/ast_context.dart';
 import 'package:dartfx/src/runtime/ast_runtime_node.dart';
 import 'package:dartfx/src/runtime/ast_resolver.dart';
 import 'package:dartfx/src/runtime/ast_runtime_executor.dart';
-
-///
-///Author: YoungChan
-///Date: 2020-07-13 17:41:38
-///LastEditors: YoungChan
-///LastEditTime: 2020-10-20 14:54:33
-///Description: 数值解析
-///
 
 class IntResolver extends AstResolver {
   @override

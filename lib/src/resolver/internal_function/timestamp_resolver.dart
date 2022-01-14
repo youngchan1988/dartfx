@@ -1,18 +1,12 @@
+// Copyright (c) 2022, the dartfx project authors. Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 import 'package:dartfx/src/runtime/ast_context.dart';
 import 'package:dartfx/src/runtime/ast_resolver.dart';
 import 'package:dartfx/src/runtime/ast_runtime_node.dart';
 import 'package:dartfx/src/runtime/ast_runtime_executor.dart';
 import 'package:intl/intl.dart';
-
-///
-/// Author: YoungChan
-/// Date: 2022-01-13 14:15:54
-/// LastEditors: YoungChan
-/// LastEditTime: 2022-01-13 14:15:55
-/// Description: TIMESTAMP 函数，返回日期参数转换后的时间戳
-/// `int TIMESTAMP(String dateString, String pattern)`
-/// Copyright: ©2022 NEW CORE Technology Co. Ltd.
-///
 
 class FuncTimestampResolver extends AstResolver {
   @override

@@ -1,12 +1,8 @@
-import 'package:dartfx/src/util/logger.dart';
+// Copyright (c) 2022, the dartfx project authors. Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
 
-///
-///Author: YoungChan
-///Date: 2020-03-12 22:27:58
-///LastEditors: YoungChan
-///LastEditTime: 2020-10-27 18:03:28
-///Description: file content
-///
+import 'package:dartfx/src/util/logger.dart';
 
 const _tag = 'AstNode';
 

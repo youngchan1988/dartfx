@@ -2,10 +2,14 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+// Modified by the dartfx project authors.
+// Copyright (c) 2022, the dartfx project authors. Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 import 'package:dartfx/src/ast/ast.dart';
 import 'package:dartfx/src/ast/type.dart';
 import 'package:dartfx/src/ast_impl/ast.dart';
-import 'package:dartfx/src/lexer/scanner/scanner.dart';
 import 'package:dartfx/src/lexer/tokens/error_token.dart';
 import 'package:dartfx/src/lexer/tokens/keyword_token.dart';
 import 'package:dartfx/src/lexer/tokens/string_token.dart';
@@ -16,31 +20,16 @@ import '../messages/codes.dart'
     show
         LocatedMessage,
         Message,
-        MessageCode,
-        messageAbstractClassMember,
-        messageAbstractLateField,
-        messageAbstractStaticField,
-        messageConstConstructorWithBody,
-        messageConstFactory,
-        messageConstructorWithTypeParameters,
         messageDirectiveAfterDeclaration,
         messageExpectedStatement,
-        messageExternalField,
-        messageExternalLateField,
         messageFieldInitializerOutsideConstructor,
         messageIllegalAssignmentToNonAssignable,
-        messageInterpolationInUri,
-        messageInvalidInitializer,
-        messageInvalidSuperInInitializer,
-        messageInvalidThisInInitializer,
         messageMissingAssignableSelector,
         messageNativeClauseShouldBeAnnotation,
-        messageOperatorWithTypeParameters,
         messagePositionalAfterNamedArgument,
         templateDuplicateLabelInSwitchStatement,
         templateExpectedButGot,
         templateExpectedIdentifier,
-        templateExperimentNotEnabled,
         templateInternalProblemUnhandled,
         templateUnexpectedToken;
 import '../ast_impl/ast_factory.dart';

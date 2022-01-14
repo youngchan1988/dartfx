@@ -1,3 +1,7 @@
+// Copyright (c) 2022, the dartfx project authors. Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:dartfx/src/ast/ast.dart';
@@ -5,15 +9,6 @@ import 'package:dartfx/src/ast/visitor.dart';
 import 'package:dartfx/src/lexer/tokens/token.dart';
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
-
-///
-/// Author: YoungChan
-/// Date: 2022-01-10 16:53:23
-/// LastEditors: YoungChan
-/// LastEditTime: 2022-01-10 16:53:23
-/// Description: description
-/// Copyright: ©2022 NEW CORE Technology Co. Ltd.
-///
 
 class AstRuntimeVisitor implements AstVisitor<Map> {
   ///需要引用的Ast

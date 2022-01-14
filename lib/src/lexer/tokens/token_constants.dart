@@ -1,16 +1,14 @@
-import '../scanner/characters.dart';
+// Copyright (c) 2015, the Dart project authors. Please see the AUTHORS file
+// for details (https://github.com/dart-lang/sdk/blob/main/AUTHORS). All rights
+//reserved. Use of this source code is governed by a BSD-style license that can
+// be found in the LICENSE file.
 
-///
-/// Copyright (c) 2015, the Dart project authors.  Please see the AUTHORS file
-/// for details. All rights reserved. Use of this source code is governed by a
-/// BSD-style license that can be found in the LICENSE file.
-///
-/// Author: YoungChan
-/// Date: 2021-12-30 13:57:00
-/// LastEditors: YoungChan
-/// LastEditTime: 2021-12-30 13:57:00
-/// Copyright: ©2022 NEW CORE Technology Co. Ltd.
-///
+// Modified by the dartfx project authors.
+// Copyright (c) 2022, the dartfx project authors. Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
+import '../scanner/characters.dart';
 
 const int EOF_TOKEN = 0;
 

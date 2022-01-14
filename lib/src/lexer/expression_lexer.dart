@@ -1,21 +1,12 @@
+// Copyright (c) 2022, the dartfx project authors. Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:dartfx/src/lexer/scanner/characters.dart';
-
 import 'scanner/utf8_bytes_scanner.dart';
-
 import 'lexer.dart';
 import 'tokens/token.dart';
-
-///
-///Author: YoungChan
-///Date: 2021-12-30 10:58:22
-///LastEditors: YoungChan
-///LastEditTime: 2021-12-30 12:04:07
-///Description: Lexer for expression string
-///Copyright: ©2022 NEW CORE Technology Co. Ltd.
-///
 
 class ExpressionLexer extends Lexer {
   ExpressionLexer({required this.expression})
