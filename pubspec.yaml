@@ -1,5 +1,5 @@
 name: dartfx
-description: A starting point for Dart libraries or applications.
+description: A simple lightly function expression runer for dart and javascript.
 version: 1.0.3
 
 environment:
