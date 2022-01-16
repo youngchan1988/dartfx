@@ -1,6 +1,8 @@
 name: dartfx
 description: A simple lightly function expression runer for dart and javascript.
 version: 1.0.4
+homepage: https://dev.apptoy.cc
+publish_to: https://pub.dev
 
 environment:
   sdk: ">=2.15.1 <3.0.0"
@@ -8,7 +10,10 @@ environment:
 dependencies:
   logger: ^1.1.0
   intl: ^0.17.0
-#   path: ^1.8.0
+  analyzer: ^3.1.0
+  convert: ^3.0.1
+  crypto: ^3.0.1
+  meta: ^1.7.0
 
 dev_dependencies:
   lints: ^1.0.0
