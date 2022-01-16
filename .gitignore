@@ -8,6 +8,7 @@
 *.code-workspace
 *.lock
 pushall.sh
+.pubignore
 
 # Conventional directory for build outputs.
 build/
