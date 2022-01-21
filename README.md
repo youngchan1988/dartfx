@@ -1,4 +1,4 @@
-![1642129461676.png](image/README/1642129420677.png)
+![1642346505729.png](image/README/1642346505729.png)
 
 > This project was developed on [dart-analyzer](https://github.com/dart-lang/sdk/tree/main/pkg/analyzer)
 
@@ -20,8 +20,8 @@ The operator doc : [Operators | Dart](https://dart.dev/guides/language/language-
 | Function                                                      | Comment                                                                                                                    |
 | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | `num ABS(num a)`                                              | Return absolutely value of number.                                                                                         |
-| `num SUM(List<num> list)`                                     | Return sum value of a number set.                                                                                          |
-| `double AVERAGE(List<num> list)`                              | Return average value of a number set.                                                                                      |
+| `num SUM(List list)`                                          | Return sum value of a number set.                                                                                          |
+| `double AVERAGE(List list)`                                   | Return average value of a number set.                                                                                      |
 | `num ROUND(num value, int digit)`                             | Return number value closest to this and limit digits after the decimal point.                                              |
 | `String FIXED(num value, int digit)`                          | Return string value closest to this and limit digits after the decimal point.                                              |
 | `int INTCEIL(num value)`                                      | Return the least integer value no smaller than this.                                                                       |
@@ -30,10 +30,10 @@ The operator doc : [Operators | Dart](https://dart.dev/guides/language/language-
 | `num MAX(num a, num b, [num c, ...])`                         | Return the max value of number arguments.                                                                                  |
 | `num MIN(num a, num b, [num c, ...])`                         | Return the min value of number arguments.                                                                                  |
 | `num VALUE(String a)`                                         | Convert string to number.                                                                                                  |
-| `bool REGMATCH(String source, r{String reg})`                 | Return the string is match regular rule, true of false. The `reg` argument need a prefix char `r`. eg: `r"1[0-9]\d{9}$"` . |
+| `bool REGMATCH(String source, r{String reg})`                 | Return the string is match regular rule, true of false. The `reg` argument need a prefix char `r`. eg: `r"1[0-9]\d{9}$"` . |
 | `String SUBSTRING(String s, int start, [int length])`         | Return sub string.                                                                                                         |
 | `String REPLACESTRING(String soruce, String old, String new)` | Replace sub string by a new one. And return the new string.                                                                |
-| `String TIMEFORMAT(int timestamp, String pattern)`            | Return the formated timestamp. The `pattern` could be "yyyy-MM-dd HH:mm:ss".                                               |
+| `String TIMEFORMAT(int timestamp, String pattern)`            | Return the formated timestamp. The `pattern` could be "yyyy-MM-dd HH:mm:ss".                                               |
 | `int TIMESTAMP(String dateString, String pattern)`            | Return the timestamp value that parse from a string.                                                                       |
 
 ## Getting started
@@ -108,3 +108,4 @@ console.log(fx('RMB(100)'));
 # License
 
 See [LICENSE](LICENSE)
+
