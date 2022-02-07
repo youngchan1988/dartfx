@@ -1,6 +1,6 @@
 name: dartfx
 description: A simple lightly function calculator for dart and javascript.
-version: 1.0.4
+version: 1.0.5
 repository: https://github.com/youngchan1988/dartfx
 issue_tracker: https://github.com/youngchan1988/dartfx/issues
 publish_to: https://pub.dev

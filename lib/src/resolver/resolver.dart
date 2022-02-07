@@ -29,6 +29,9 @@ import 'internal_function/isempty_resolver.dart';
 import 'internal_function/substring_resolver.dart';
 import 'internal_function/replacestring_resolver.dart';
 import 'internal_function/regmatch_resolver.dart';
+import 'internal_function/pow_resolver.dart';
+import 'internal_function/sqrt_resolver.dart';
+import 'internal_function/contain_resolver.dart';
 
 typedef FunctionResolver = dynamic Function(
     String functionName, List arguments);
@@ -57,7 +60,10 @@ class Resolver extends AstResolver {
         .addResolver(FuncIsEmptyResolver())
         .addResolver(FuncSubstringResolver())
         .addResolver(FuncReplaceStringResolver())
-        .addResolver(FuncRegmatchResolver());
+        .addResolver(FuncRegmatchResolver())
+        .addResolver(FuncPowResolver())
+        .addResolver(FuncSqrtResolver())
+        .addResolver(FuncContainResolver());
   }
 
   static const _tag = "CommonParser";

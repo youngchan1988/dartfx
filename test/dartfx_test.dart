@@ -327,6 +327,24 @@ void main() {
       result = fx('REGMATCH("zhan.yanyang@xinheyun.com", r"$reg")');
       expect(result, false);
     });
+
+    test('Test POW', () {
+      var result = fx('POW(2, 3)');
+      expect(result, 8);
+    });
+
+    test('Test SQRT', () {
+      var result = fx('SQRT(9)');
+      expect(result, 3);
+    });
+
+    test('Test CONTAIN', () {
+      var envs = {
+        "cities": ["北京", "上海", "广州", "深圳", "重庆"],
+      };
+      var result = fxWithEnvs('CONTAIN(\$cities\$, ["上海"])', envs);
+      expect(result, true);
+    });
   });
 
   group('Test composite function', () {

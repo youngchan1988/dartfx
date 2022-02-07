@@ -341,3 +341,22 @@ test('Test RMB', () => {
 	var result = fx('RMB(100)');
 	expect(result).toBe("¥100");
 });
+
+
+test('Test POW', () => {
+	var result = fx('POW(2, 3)');
+	expect(result).toBe(8);
+});
+
+test('Test SQRT', () => {
+	var result = fx('SQRT(9)');
+	expect(result).toBe(3);
+});
+
+test('Test CONTAIN', () => {
+	var envs = {
+		"cities": ["北京", "上海", "广州", "深圳", "重庆"],
+	};
+	var result = fxWithEnvs('CONTAIN(\$cities\$, ["上海"])', envs);
+	expect(result).toBe(true);
+});

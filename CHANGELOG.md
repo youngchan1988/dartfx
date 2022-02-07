@@ -1,3 +1,11 @@
+## 1.0.5
+
+Add some internal functions
+
+- `num POW(num x, num exponent)`
+- `num SQRT(num x)`
+- `bool CONTAIN(List list,  List sub)`
+
 ## 1.0.4
 
 - Update License.
