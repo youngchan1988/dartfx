@@ -1,14 +1,13 @@
 import 'dart:js';
 
-import 'dart:js' as js;
 import 'dartfx_main.dart';
 import 'util/jsvalue2dart.dart';
 
 void main() {
-  js.context['jsfx'] = fx;
-  js.context['jsfxWithEnvs'] = jsfxWithEnvs;
-  js.context['jsfxAssignment'] = jsfxAssignment;
-  js.context['jsSetFunctionResolver'] = jsSetFunctionResolver;
+  context['jsfx'] = fx;
+  context['jsfxWithEnvs'] = jsfxWithEnvs;
+  context['jsfxAssignment'] = jsfxAssignment;
+  context['jsSetFunctionResolver'] = jsSetFunctionResolver;
 }
 
 dynamic jsSetFunctionResolver(JsFunction jsFunction) {

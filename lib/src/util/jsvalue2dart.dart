@@ -6,17 +6,18 @@ import 'dart:js';
 
 /// Converts the specified JavaScript [value] to a Dart instance.
 dynamic jsValueToDart(value) {
-  // Value types.
-  if (value == null) return null;
-  if (value is bool || value is num || value is DateTime || value is String)
-    return value;
-
   // JsArray.
-  if (value is Iterable) return value.map(jsValueToDart).toList();
-
-  // JsObject.
-  return Map.fromIterable(getKeysOfObject(value),
-      value: (key) => jsValueToDart(value[key]));
+  if (value is Iterable) {
+    var v = value.map(jsValueToDart).toList();
+    return v;
+  }
+  if (value is JsObject) {
+    // JsObject.
+    var v = Map.fromIterable(getKeysOfObject(value),
+        value: (key) => jsValueToDart(value[key]));
+    return v;
+  }
+  return value;
 }
 
 // dynamic dartValueToJs(value) {

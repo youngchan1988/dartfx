@@ -82,6 +82,7 @@ dynamic fxWithEnvs(String expression, Map envs) {
 /// 运行包含变量声明（$...$）的赋值表达式，赋值的结果更新在`envs`中
 /// expression: 赋值公式表达式，如：$a.b$=1+2+3
 /// envs: 变量值对象{}
+/// leftEnvFields: 解析等式左边字段为了支持js 端object的赋值操作
 ///
 dynamic fxAssignment(String expression, Map envs,
     {void Function(List<String>)? leftEnvFields}) {
@@ -107,13 +108,13 @@ dynamic fxAssignment(String expression, Map envs,
           runtimeNode.operator != '^=' &&
           runtimeNode.operator != '>>=' &&
           runtimeNode.operator != '<<=')) {
-    logWarn(_tag, 'Exprssion is not assignment');
+    warn(tag: _tag, message: 'Exprssion is not assignment');
     return;
   }
   if (runtimeNode.left is! runtime.StringLiteral ||
       !executor
           .isEnvString((runtimeNode.left as runtime.StringLiteral).value)) {
-    logWarn(_tag, 'Assignment left is not env variable');
+    warn(tag: _tag, message: 'Assignment left is not env variable');
     return;
   }
   var astContext = AstContext();

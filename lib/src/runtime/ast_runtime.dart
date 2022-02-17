@@ -301,42 +301,58 @@ class DefaultAstRuntimeExecutor implements AstRuntimeExecutor {
       case '+':
         //获取右操作符的值
         var rightValue = execute(astContext, expression.right);
-
+        if (leftValue == null || rightValue == null) {
+          return null;
+        }
         return leftValue + rightValue;
       case '-':
         //获取右操作符的值
         var rightValue = execute(astContext, expression.right);
-
+        if (leftValue == null || rightValue == null) {
+          return null;
+        }
         return leftValue - rightValue;
       case '*':
         //获取右操作符的值
         var rightValue = execute(astContext, expression.right);
-
+        if (leftValue == null || rightValue == null) {
+          return null;
+        }
         return leftValue * rightValue;
       case '/':
         //获取右操作符的值
         var rightValue = execute(astContext, expression.right);
-
+        if (leftValue == null || rightValue == null) {
+          return null;
+        }
         return leftValue / rightValue;
       case '<':
         //获取右操作符的值
         var rightValue = execute(astContext, expression.right);
-
+        if (leftValue == null || rightValue == null) {
+          return false;
+        }
         return leftValue < rightValue;
       case '>':
         //获取右操作符的值
         var rightValue = execute(astContext, expression.right);
-
+        if (leftValue == null || rightValue == null) {
+          return false;
+        }
         return leftValue > rightValue;
       case '<=':
         //获取右操作符的值
         var rightValue = execute(astContext, expression.right);
-
+        if (leftValue == null || rightValue == null) {
+          return false;
+        }
         return leftValue <= rightValue;
       case '>=':
         //获取右操作符的值
         var rightValue = execute(astContext, expression.right);
-
+        if (leftValue == null || rightValue == null) {
+          return false;
+        }
         return leftValue >= rightValue;
       case '==':
         //获取右操作符的值
@@ -353,6 +369,9 @@ class DefaultAstRuntimeExecutor implements AstRuntimeExecutor {
         if (leftValue == true) {
           //获取右操作符的值
           var rightValue = execute(astContext, expression.right);
+          if (leftValue == null || rightValue == null) {
+            return false;
+          }
           return rightValue;
         } else {
           return false;
@@ -364,40 +383,69 @@ class DefaultAstRuntimeExecutor implements AstRuntimeExecutor {
         } else {
           //获取右操作符的值
           var rightValue = execute(astContext, expression.right);
+          if (leftValue == null || rightValue == null) {
+            return false;
+          }
           return rightValue;
         }
       case '%':
         var rightValue = execute(astContext, expression.right);
+        if (leftValue == null || rightValue == null) {
+          return null;
+        }
         return leftValue % rightValue;
       case '<<':
         var rightValue = execute(astContext, expression.right);
+        if (leftValue == null || rightValue == null) {
+          return null;
+        }
         return leftValue << rightValue;
       case '|':
         var rightValue = execute(astContext, expression.right);
+        if (leftValue == null || rightValue == null) {
+          return null;
+        }
         return leftValue | rightValue;
       case '&':
         var rightValue = execute(astContext, expression.right);
+        if (leftValue == null || rightValue == null) {
+          return null;
+        }
         return leftValue & rightValue;
       case '^':
         var rightValue = execute(astContext, expression.right);
+        if (leftValue == null || rightValue == null) {
+          return null;
+        }
         return leftValue ^ rightValue;
       case '>>':
         var rightValue = execute(astContext, expression.right);
+        if (leftValue == null || rightValue == null) {
+          return null;
+        }
         return leftValue >> rightValue;
       case '??':
         //'??' 操作顺序从前往后判断
         if (leftValue == null) {
           var rightValue = execute(astContext, expression.right);
+          if (leftValue == null || rightValue == null) {
+            return null;
+          }
           return rightValue;
         } else {
           return leftValue;
         }
       case '~/':
         var rightValue = execute(astContext, expression.right);
+        if (leftValue == null || rightValue == null) {
+          return null;
+        }
         return leftValue ~/ rightValue;
       default:
-        logError(_tag,
-            "Undefined BinaryExpression operator: ${expression.operator}");
+        error(
+            tag: _tag,
+            message:
+                "Undefined BinaryExpression operator: ${expression.operator}");
 
         return null;
     }
@@ -679,7 +727,7 @@ class DefaultAstRuntimeExecutor implements AstRuntimeExecutor {
       AstContext? astContext, StringLiteral stringLiteral,
       {EnvValue? envValue}) {
     if (isEnvString(stringLiteral.value.toString()) && envValue != null) {
-      return envValue(stringLiteral.value.toString()) ?? '';
+      return envValue(stringLiteral.value.toString());
     }
     return stringLiteral.value;
   }
@@ -736,11 +784,12 @@ class DefaultAstRuntimeExecutor implements AstRuntimeExecutor {
       astContext!.setVariableValue(left.name, rightValue);
     } else if (left is PrefixedIdentifier) {
       var target = astContext!.findVariable(left.prefix)?.value;
-      logWarn(_tag, 'PrefixedIdentifier is in TODO, target: $target');
+      warn(
+          tag: _tag, message: 'PrefixedIdentifier is in TODO, target: $target');
     } else if (left is PropertyAccess) {
       var property = left.expression;
       var target = execute(astContext, property);
-      logWarn(_tag, 'PropertyAccess is in TODO, target: $target');
+      warn(tag: _tag, message: 'PropertyAccess is in TODO, target: $target');
     } else if (left is IndexExpression) {
       var target = execute(astContext, left.target);
       if (target != null && !left.isNullAware!) {
