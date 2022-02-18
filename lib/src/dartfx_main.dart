@@ -34,7 +34,7 @@ ProgramImpl _parseProgram({required String content}) {
   return astBuilder.pop() as ProgramImpl;
 }
 
-dynamic executeExpression(
+dynamic _executeExpression(
     {required String expression, dynamic Function(String)? onGetEnvValue}) {
   var program = _parseProgram(content: expression);
   var visitor = AstRuntimeVisitor();
@@ -44,16 +44,31 @@ dynamic executeExpression(
   return executor.execute(astContext, runtime.Program.fromAst(ast)!.body!);
 }
 
-dynamic executeExpressionWithEnv({required String expression, Map? envs}) {
-  return executeExpression(
+dynamic _executeExpressionWithEnv({required String expression, Map? envs}) {
+  return _executeExpression(
       expression: expression,
       onGetEnvValue: (envValue) {
         if (envs?.isNotEmpty == true) {
-          return parseEnvValue(envValue, envs!);
+          return _parseEnvValue(envValue, envs!);
         } else {
           return null;
         }
       });
+}
+
+///读取变量值
+dynamic _parseEnvValue(String envValue, Map envs) {
+  if (envs.isNotEmpty && envValue.length > 2) {
+    envValue = envValue.substring(1, envValue.length - 1);
+    var fields = envValue.split(".");
+    dynamic value = envs;
+    for (var i = 0; i < fields.length; i++) {
+      value = value[fields[i]];
+    }
+    return value;
+  } else {
+    return null;
+  }
 }
 
 ///设置自定义函数回调，初始化时调用一次
@@ -63,7 +78,7 @@ void fxSetFunctionResolver(FunctionResolver functionResolver) {
 
 // 运行公式表达式并返回结果
 dynamic fx(String expression) {
-  return executeExpression(expression: expression);
+  return _executeExpression(expression: expression);
 }
 
 ///
@@ -72,7 +87,7 @@ dynamic fx(String expression) {
 /// envs: 变量值对象{}
 ///
 dynamic fxWithEnvs(String expression, Map envs) {
-  return executeExpressionWithEnv(expression: expression, envs: envs);
+  return _executeExpressionWithEnv(expression: expression, envs: envs);
 }
 
 ///
@@ -89,7 +104,7 @@ dynamic fxAssignment(String expression, Map envs,
   var ast = program.accept(visitor);
 
   var executor = DefaultAstRuntimeExecutor(envValue: (envValue) {
-    return parseEnvValue(envValue, envs);
+    return _parseEnvValue(envValue, envs);
   });
   var runtimeNode = runtime.Program.fromAst(ast)!.body!;
   if (runtimeNode is! runtime.AssignmentExpression ||
@@ -119,7 +134,7 @@ dynamic fxAssignment(String expression, Map envs,
 
   var leftEnvValue =
       (runtimeNode.left as runtime.StringLiteral).value as String;
-  var leftValue = parseEnvValue(leftEnvValue, envs);
+  var leftValue = _parseEnvValue(leftEnvValue, envs);
 
   leftEnvValue = leftEnvValue.substring(1, leftEnvValue.length - 1);
   var fields = leftEnvValue.split(".");
@@ -160,19 +175,4 @@ dynamic fxAssignment(String expression, Map envs,
   }
   value[fields.last] = rightValue;
   return rightValue;
-}
-
-///读取变量值
-dynamic parseEnvValue(String envValue, Map envs) {
-  if (envs.isNotEmpty && envValue.length > 2) {
-    envValue = envValue.substring(1, envValue.length - 1);
-    var fields = envValue.split(".");
-    dynamic value = envs;
-    for (var i = 0; i < fields.length; i++) {
-      value = value[fields[i]];
-    }
-    return value;
-  } else {
-    return null;
-  }
 }
