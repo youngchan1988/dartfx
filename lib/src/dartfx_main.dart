@@ -72,8 +72,8 @@ dynamic _parseEnvValue(String envVar, Map envValues) {
   if (envValues.isNotEmpty && envVar.isNotEmpty) {
     var fields = envVar.split(".");
     dynamic value = envValues;
-    for (var i = 0; i < fields.length; i++) {
-      value = value[fields[i]];
+    for (var f in fields) {
+      value = value[f];
     }
     return value;
   } else {
