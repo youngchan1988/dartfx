@@ -35,28 +35,25 @@ ProgramImpl _parseProgram({required String content}) {
 }
 
 dynamic executeExpression(
-    {required String expression, dynamic Function(String)? envValue}) {
+    {required String expression, dynamic Function(String)? onGetEnvValue}) {
   var program = _parseProgram(content: expression);
   var visitor = AstRuntimeVisitor();
   var ast = program.accept(visitor);
-  var executor = DefaultAstRuntimeExecutor(envValue: envValue);
+  var executor = DefaultAstRuntimeExecutor(envValue: onGetEnvValue);
   var astContext = AstContext();
   return executor.execute(astContext, runtime.Program.fromAst(ast)!.body!);
 }
 
 dynamic executeExpressionWithEnv({required String expression, Map? envs}) {
-  var program = _parseProgram(content: expression);
-  var visitor = AstRuntimeVisitor();
-  var ast = program.accept(visitor);
-  var executor = DefaultAstRuntimeExecutor(envValue: (envValue) {
-    if (envs?.isNotEmpty == true) {
-      return parseEnvValue(envValue, envs!);
-    } else {
-      return null;
-    }
-  });
-  var astContext = AstContext();
-  return executor.execute(astContext, runtime.Program.fromAst(ast)!.body!);
+  return executeExpression(
+      expression: expression,
+      onGetEnvValue: (envValue) {
+        if (envs?.isNotEmpty == true) {
+          return parseEnvValue(envValue, envs!);
+        } else {
+          return null;
+        }
+      });
 }
 
 ///设置自定义函数回调，初始化时调用一次
