@@ -14,7 +14,6 @@ dependencies:
   convert: ^3.0.1
   crypto: ^3.0.1
   meta: ^1.7.0
-  js: ^0.6.4
 
 dev_dependencies:
   lints: ^1.0.0
