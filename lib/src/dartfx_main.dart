@@ -5,7 +5,6 @@
 import 'package:analyzer/error/listener.dart';
 import 'package:analyzer/src/string_source.dart';
 import 'package:dartfx/dartfx.dart';
-import 'package:dartfx/src/runtime/ast_context.dart';
 import 'package:dartfx/src/util/logger.dart';
 import 'ast_impl/ast.dart';
 import 'ast_impl/ast_runtime_visitor.dart';
