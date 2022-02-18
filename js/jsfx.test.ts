@@ -360,3 +360,14 @@ test('Test CONTAIN', () => {
 	var result = fxWithEnvs('CONTAIN(\$cities\$, ["上海"])', envs);
 	expect(result).toBe(true);
 });
+
+test('Test fx onGetEnvValue', () => {
+	var result = fx('\$alice.name\$', (envVar) => {
+		if (envVar == "alice.name") {
+			return "Alice";
+		} else {
+			return "Unknown";
+		}
+	});
+	expect(result).toBe("Alice");
+})

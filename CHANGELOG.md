@@ -1,3 +1,7 @@
+## 1.0.8
+
+- Change `fx(String)` to `fx(String, {GetEnvValue?})`.
+
 ## 1.0.7
 
 - Fix parse `JsObject.undefined` value.

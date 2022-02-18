@@ -34,33 +34,44 @@ ProgramImpl _parseProgram({required String content}) {
 }
 
 dynamic _executeExpression(
-    {required String expression, dynamic Function(String)? onGetEnvValue}) {
+    {required String expression, GetEnvValue? onGetEnvValue}) {
   var program = _parseProgram(content: expression);
   var visitor = AstRuntimeVisitor();
   var ast = program.accept(visitor);
-  var executor = DefaultAstRuntimeExecutor(envValue: onGetEnvValue);
+  var executor = DefaultAstRuntimeExecutor(onGetEnvValue: (envVar) {
+    if (envVar.startsWith('\$') && envVar.endsWith('\$')) {
+      var varStr = envVar.substring(1, envVar.length - 1);
+      return onGetEnvValue?.call(varStr);
+    } else {
+      warn(tag: _tag, message: "Unkown enviroment variable: $envVar");
+      return null;
+    }
+  });
   var astContext = AstContext();
   return executor.execute(astContext, runtime.Program.fromAst(ast)!.body!);
 }
 
-dynamic _executeExpressionWithEnv({required String expression, Map? envs}) {
+dynamic _executeExpressionWithEnv(
+    {required String expression, Map? envValues}) {
   return _executeExpression(
       expression: expression,
-      onGetEnvValue: (envValue) {
-        if (envs?.isNotEmpty == true) {
-          return _parseEnvValue(envValue, envs!);
+      onGetEnvValue: (envVar) {
+        if (envValues?.isNotEmpty == true) {
+          return _parseEnvValue(envVar, envValues!);
         } else {
           return null;
         }
       });
 }
 
-///读取变量值
-dynamic _parseEnvValue(String envValue, Map envs) {
-  if (envs.isNotEmpty && envValue.length > 2) {
-    envValue = envValue.substring(1, envValue.length - 1);
-    var fields = envValue.split(".");
-    dynamic value = envs;
+///Read enviroment variable from values set.
+///
+/// envVar: eg: `$a.b$`.
+///
+dynamic _parseEnvValue(String envVar, Map envValues) {
+  if (envValues.isNotEmpty && envVar.isNotEmpty) {
+    var fields = envVar.split(".");
+    dynamic value = envValues;
     for (var i = 0; i < fields.length; i++) {
       value = value[fields[i]];
     }
@@ -70,40 +81,56 @@ dynamic _parseEnvValue(String envValue, Map envs) {
   }
 }
 
-///设置自定义函数回调，初始化时调用一次
+/// If there is a function witch the internal functions doesn't have. You can custom
+/// your own function by set a [FunctionResolver].
+///
 void fxSetFunctionResolver(FunctionResolver functionResolver) {
   Resolver.instance.functionApply = functionResolver;
 }
 
-// 运行公式表达式并返回结果
-dynamic fx(String expression) {
-  return _executeExpression(expression: expression);
+/// Run expression and return the result.
+///
+/// onGetEnvValue: Enviroment value callback function.
+///
+dynamic fx(String expression, {GetEnvValue? onGetEnvValue}) {
+  return _executeExpression(
+      expression: expression, onGetEnvValue: onGetEnvValue);
 }
 
 ///
-/// 运行包含变量声明（$...$）的公式表达式，并返回结果
-/// expression: 公式表达式
-/// envs: 变量值对象{}
+/// Run expression and return the result.
 ///
-dynamic fxWithEnvs(String expression, Map envs) {
-  return _executeExpressionWithEnv(expression: expression, envs: envs);
+/// envValues: Enviroment values set. If the expression contains a variable `$a.b$`. Then
+///       you should give a values set like `{"a": {"b": something}}`.
+///
+dynamic fxWithEnvs(String expression, Map envValues) {
+  return _executeExpressionWithEnv(
+      expression: expression, envValues: envValues);
 }
 
 ///
-/// 运行包含变量声明（$...$）的赋值表达式，赋值的结果更新在`envs`中
-/// expression: 赋值公式表达式，如：$a.b$=1+2+3
-/// envs: 变量值对象{}
-/// leftEnvFields: 解析等式左边字段为了支持js 端object的赋值操作
+/// Run assignment expression and return the right side value.
 ///
-dynamic fxAssignment(String expression, Map envs,
-    {void Function(List<String>)? leftEnvFields}) {
+/// expression: Assignment expression，eg: `$a.b$=1+2+3`.
+/// envValues: Enviroment values set. If the expression contains a variable `$a.b$`. Then
+///       you should give a values set like `{"a": {"b": something}}`.
+/// leftEnvs: Used for [jsfxAssignment] in `jsfx.dart`.
+///
+dynamic fxAssignment(String expression, Map envValues,
+    {void Function(List<String>)? leftEnvs}) {
   var program = _parseProgram(content: expression);
 
   var visitor = AstRuntimeVisitor();
   var ast = program.accept(visitor);
 
-  var executor = DefaultAstRuntimeExecutor(envValue: (envValue) {
-    return _parseEnvValue(envValue, envs);
+  var executor = DefaultAstRuntimeExecutor(onGetEnvValue: (envVar) {
+    if (envVar.startsWith('\$') && envVar.endsWith('\$')) {
+      var varStr = envVar.substring(1, envVar.length - 1);
+      return _parseEnvValue(varStr, envValues);
+    } else {
+      warn(tag: _tag, message: "Unkown enviroment variable: $envVar");
+      return null;
+    }
   });
   var runtimeNode = runtime.Program.fromAst(ast)!.body!;
   if (runtimeNode is! runtime.AssignmentExpression ||
@@ -119,59 +146,71 @@ dynamic fxAssignment(String expression, Map envs,
           runtimeNode.operator != '^=' &&
           runtimeNode.operator != '>>=' &&
           runtimeNode.operator != '<<=')) {
-    warn(tag: _tag, message: 'Exprssion is not assignment');
-    return;
+    error(tag: _tag, message: 'Unsupport assignment expression: $expression');
+    return null;
   }
   if (runtimeNode.left is! runtime.StringLiteral ||
       !executor
           .isEnvString((runtimeNode.left as runtime.StringLiteral).value)) {
     warn(tag: _tag, message: 'Assignment left is not env variable');
-    return;
+    return null;
   }
   var astContext = AstContext();
   dynamic rightValue = executor.execute(astContext, runtimeNode.right);
 
-  var leftEnvValue =
-      (runtimeNode.left as runtime.StringLiteral).value as String;
-  var leftValue = _parseEnvValue(leftEnvValue, envs);
-
-  leftEnvValue = leftEnvValue.substring(1, leftEnvValue.length - 1);
-  var fields = leftEnvValue.split(".");
-  leftEnvFields?.call(fields);
-  dynamic value = envs;
+  var leftEnvVar = (runtimeNode.left as runtime.StringLiteral).value as String;
+  if (leftEnvVar.startsWith('\$') && leftEnvVar.endsWith('\$')) {
+    leftEnvVar = leftEnvVar.substring(1, leftEnvVar.length - 1);
+  } else {
+    warn(tag: _tag, message: 'Assignment left is not env variable');
+    return null;
+  }
+  var leftValue = _parseEnvValue(leftEnvVar, envValues);
+  var fields = leftEnvVar.split(".");
+  leftEnvs?.call(fields);
+  dynamic value = envValues;
   for (var i = 0; i < fields.length - 1; i++) {
     value = value[fields[i]];
   }
+  if (rightValue != null) {
+    if (leftValue != null) {
+      switch (runtimeNode.operator) {
+        case '+=':
+          rightValue = leftValue + rightValue;
+          break;
+        case '-=':
+          rightValue = leftValue - rightValue;
+          break;
+        case '*=':
+          rightValue = leftValue * rightValue;
+          break;
+        case '%=':
+          rightValue = leftValue % rightValue;
+          break;
+        case '&=':
+          rightValue = leftValue & rightValue;
+          break;
+        case '|=':
+          rightValue = leftValue | rightValue;
+          break;
+        case '^=':
+          rightValue = leftValue ^ rightValue;
+          break;
+        case '>>=':
+          rightValue = leftValue >> rightValue;
+          break;
+        case '<<=':
+          rightValue = leftValue << rightValue;
+          break;
+      }
+    } else {
+      warn(tag: _tag, message: 'Assignment right side is null');
+    }
 
-  switch (runtimeNode.operator) {
-    case '+=':
-      rightValue = leftValue + rightValue;
-      break;
-    case '-=':
-      rightValue = leftValue - rightValue;
-      break;
-    case '*=':
-      rightValue = leftValue * rightValue;
-      break;
-    case '%=':
-      rightValue = leftValue % rightValue;
-      break;
-    case '&=':
-      rightValue = leftValue & rightValue;
-      break;
-    case '|=':
-      rightValue = leftValue | rightValue;
-      break;
-    case '^=':
-      rightValue = leftValue ^ rightValue;
-      break;
-    case '>>=':
-      rightValue = leftValue >> rightValue;
-      break;
-    case '<<=':
-      rightValue = leftValue << rightValue;
-      break;
+    value[fields.last] = rightValue;
+  } else {
+    warn(tag: _tag, message: 'Assignment right side is null');
   }
-  value[fields.last] = rightValue;
+
   return rightValue;
 }

@@ -10,30 +10,41 @@ declare var jsfxWithEnvs: Function;
 declare var jsfxAssignment: Function;
 declare var jsSetFunctionResolver: Function;
 
-// 运行公式表达式并返回结果
-export function fx(expression: string): any {
-	return jsfx(expression);
+/*
+* Run expression and return the result.
+*
+* onGetEnvValue: Enviroment value callback function.
+*/
+export function fx(expression: string, onGetEnvValue?: Function): any {
+	return jsfx(expression, onGetEnvValue);
 }
 
 /* 
-* 运行包含变量声明（$...$）的公式表达式，并返回结果
-* expression: 公式表达式
-* envs: 变量值对象{}
+* Run expression and return the result.
+*
+* envValues: Enviroment values set. If the expression contains a variable `$a.b$`. Then
+*       you should give a values set like `{"a": {"b": something}}`.
 */
-export function fxWithEnvs(expression: string, envs: object): any {
-	return jsfxWithEnvs(expression, envs);
+export function fxWithEnvs(expression: string, envValues: object): any {
+	return jsfxWithEnvs(expression, envValues);
 }
 
 /* 
-* 运行包含变量声明（$...$）的赋值表达式，赋值的结果更新在`envs`中
-* expression: 赋值公式表达式，如：$a.b$=1+2+3
-* envs: 变量值对象{}
+* Run assignment expression and return the right side value.
+*
+* expression: Assignment expression，eg: `$a.b$=1+2+3`.
+* envValues: Enviroment values set. If the expression contains a variable `$a.b$`. Then
+*       you should give a values set like `{"a": {"b": something}}`.
+* leftEnvs: Used for [jsfxAssignment] in `jsfx.dart`.
 */
-export function fxAssignment(expression: string, envs: object): any {
-	return jsfxAssignment(expression, envs);
+export function fxAssignment(expression: string, envValues: object): any {
+	return jsfxAssignment(expression, envValues);
 }
 
-//设置自定义函数处理，初始化时调用一次
+/*
+* If there is a function witch the internal functions doesn't have. You can custom
+* your own function by set a [FunctionResolver].
+*/
 export function fxSetFunctionResolver(functionResolver: Function) {
 	jsSetFunctionResolver(functionResolver);
 }

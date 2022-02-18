@@ -7,7 +7,7 @@ import 'ast_context.dart';
 import 'ast_runtime_node.dart';
 import 'ast_runtime_executor.dart';
 
-typedef EnvValue = dynamic Function(String);
+typedef GetEnvValue = dynamic Function(String);
 
 ///Ast函数定义
 class AstFunction {
@@ -138,9 +138,9 @@ class ReturnValue {
 }
 
 class DefaultAstRuntimeExecutor implements AstRuntimeExecutor {
-  DefaultAstRuntimeExecutor({this.envValue});
+  DefaultAstRuntimeExecutor({this.onGetEnvValue});
 
-  final EnvValue? envValue;
+  final GetEnvValue? onGetEnvValue;
 
   static final _tag = "DefaultAstRuntimeExecutor";
 
@@ -199,7 +199,7 @@ class DefaultAstRuntimeExecutor implements AstRuntimeExecutor {
     } else if (astNode is StringInterpolation) {
       return executeStringInterpolation(astContext, astNode);
     } else if (astNode is StringLiteral) {
-      return executeStringLiteral(astContext, astNode, envValue: envValue);
+      return executeStringLiteral(astContext, astNode, envValue: onGetEnvValue);
     } else if (astNode is ThisExpression) {
       return executeThisExpression(astContext!, astNode);
     } else if (astNode is VariableDeclarationList) {
@@ -725,7 +725,7 @@ class DefaultAstRuntimeExecutor implements AstRuntimeExecutor {
   @override
   dynamic executeStringLiteral(
       AstContext? astContext, StringLiteral stringLiteral,
-      {EnvValue? envValue}) {
+      {GetEnvValue? envValue}) {
     if (isEnvString(stringLiteral.value.toString()) && envValue != null) {
       return envValue(stringLiteral.value.toString());
     }

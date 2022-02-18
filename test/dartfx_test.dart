@@ -101,17 +101,6 @@ void main() {
       result = fxWithEnvs('\$43860\$ >= 10', envs);
       expect(result, false);
     });
-
-    // test('Test env value', () {
-    //   var envs = {
-    //     "43858": {"message": "元"},
-    //     "43859": {
-    //       "currency": [100, 200, 300, 400]
-    //     }
-    //   };
-    //   var result = fxWithEnvs('\$43859.currency\$[2]+\$43858.message\$', envs);
-    //   expect(result, "300元");
-    // });
   });
 
   group('Test assignment', () {
