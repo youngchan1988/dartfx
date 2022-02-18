@@ -6,6 +6,17 @@ import 'package:dartfx/dartfx.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test('Test fx', () {
+    var result = fx('\$alice.name\$', onGetEnvValue: (envVar) {
+      if (envVar == 'alice.name') {
+        return 'Alice';
+      } else {
+        return 'Unknown';
+      }
+    });
+    expect(result, 'Alice');
+  });
+
   group('Test binary expression', () {
     test('Test arithmetic', () {
       var result = fx('1+(2+3)*7 - 4/2');

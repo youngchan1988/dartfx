@@ -43,7 +43,7 @@ The operator doc : [Operators | Dart](https://dart.dev/guides/language/language-
 
 ```yaml
 dependencies:
-    dartfx: ^1.0.6
+    dartfx: ^1.0.8
 ```
 
 To build `jsfx`.
@@ -107,6 +107,7 @@ fxSetFunctionApply((...args) => {
 });
 console.log(fx('RMB(100)'));
 ```
+More usage check the test case: `test/dartfx_test.dart` & `js/jsfx.test.ts`
 
 # License
 
