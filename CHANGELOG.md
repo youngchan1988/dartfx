@@ -1,4 +1,4 @@
-## 1.0.6
+## 1.0.7
 
 - Fix parse `JsObject.undefined` value.
 - Fix runtime `executeBinaryExpression.left` & `executeBinaryExpression.right` null value.
