@@ -13,7 +13,7 @@ declare var jsSetFunctionResolver: Function;
 /*
 * Run expression and return the result.
 *
-* onGetEnvValue: Enviroment value callback function.
+* onGetEnvValue: Environment value callback function.
 */
 export function fx(expression: string, onGetEnvValue?: Function): any {
 	return jsfx(expression, onGetEnvValue);
@@ -22,7 +22,7 @@ export function fx(expression: string, onGetEnvValue?: Function): any {
 /* 
 * Run expression and return the result.
 *
-* envValues: Enviroment values set. If the expression contains a variable `$a.b$`. Then
+* envValues: Environment values set. If the expression contains a variable `$a.b$`. Then
 *       you should give a values set like `{"a": {"b": something}}`.
 */
 export function fxWithEnvs(expression: string, envValues: object): any {
@@ -33,7 +33,7 @@ export function fxWithEnvs(expression: string, envValues: object): any {
 * Run assignment expression and return the right side value.
 *
 * expression: Assignment expression，eg: `$a.b$=1+2+3`.
-* envValues: Enviroment values set. If the expression contains a variable `$a.b$`. Then
+* envValues: Environment values set. If the expression contains a variable `$a.b$`. Then
 *       you should give a values set like `{"a": {"b": something}}`.
 * leftEnvs: Used for [jsfxAssignment] in `jsfx.dart`.
 */

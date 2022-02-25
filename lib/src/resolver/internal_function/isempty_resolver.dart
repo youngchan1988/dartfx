@@ -27,6 +27,9 @@ class FuncIsEmptyResolver extends AstResolver {
     if (arguments?.isNotEmpty == true) {
       var arg = arguments!.first;
       var value = executor.execute(astContext, arg);
+      if (value == null) {
+        return false;
+      }
       if (value is String || value is Iterable || value is Map) {
         if (value is String) {
           return value.isEmpty;

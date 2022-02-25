@@ -35,6 +35,9 @@ ProgramImpl _parseProgram({required String content}) {
 
 dynamic _executeExpression(
     {required String expression, GetEnvValue? onGetEnvValue}) {
+  if (expression.isEmpty) {
+    return '';
+  }
   var program = _parseProgram(content: expression);
   var visitor = AstRuntimeVisitor();
   var ast = program.accept(visitor);
@@ -43,7 +46,7 @@ dynamic _executeExpression(
       var varStr = envVar.substring(1, envVar.length - 1);
       return onGetEnvValue?.call(varStr);
     } else {
-      warn(tag: _tag, message: "Unkown enviroment variable: $envVar");
+      warn(tag: _tag, message: "Unkown environment variable: $envVar");
       return null;
     }
   });
@@ -64,7 +67,7 @@ dynamic _executeExpressionWithEnv(
       });
 }
 
-///Read enviroment variable from values set.
+///Read environment variable from values set.
 ///
 /// envVar: eg: `$a.b$`.
 ///
@@ -90,7 +93,7 @@ void fxSetFunctionResolver(FunctionResolver functionResolver) {
 
 /// Run expression and return the result.
 ///
-/// onGetEnvValue: Enviroment value callback function.
+/// onGetEnvValue: Environment value callback function.
 ///
 dynamic fx(String expression, {GetEnvValue? onGetEnvValue}) {
   return _executeExpression(
@@ -100,7 +103,7 @@ dynamic fx(String expression, {GetEnvValue? onGetEnvValue}) {
 ///
 /// Run expression and return the result.
 ///
-/// envValues: Enviroment values set. If the expression contains a variable `$a.b$`. Then
+/// envValues: Environment values set. If the expression contains a variable `$a.b$`. Then
 ///       you should give a values set like `{"a": {"b": something}}`.
 ///
 dynamic fxWithEnvs(String expression, Map envValues) {
@@ -112,12 +115,15 @@ dynamic fxWithEnvs(String expression, Map envValues) {
 /// Run assignment expression and return the right side value.
 ///
 /// expression: Assignment expression，eg: `$a.b$=1+2+3`.
-/// envValues: Enviroment values set. If the expression contains a variable `$a.b$`. Then
+/// envValues: Environment values set. If the expression contains a variable `$a.b$`. Then
 ///       you should give a values set like `{"a": {"b": something}}`.
 /// leftEnvs: Used for [jsfxAssignment] in `jsfx.dart`.
 ///
 dynamic fxAssignment(String expression, Map envValues,
     {void Function(List<String>)? leftEnvs}) {
+  if (expression.isEmpty) {
+    return null;
+  }
   var program = _parseProgram(content: expression);
 
   var visitor = AstRuntimeVisitor();
@@ -128,7 +134,7 @@ dynamic fxAssignment(String expression, Map envValues,
       var varStr = envVar.substring(1, envVar.length - 1);
       return _parseEnvValue(varStr, envValues);
     } else {
-      warn(tag: _tag, message: "Unkown enviroment variable: $envVar");
+      warn(tag: _tag, message: "Unkown environment variable: $envVar");
       return null;
     }
   });

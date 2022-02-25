@@ -359,6 +359,12 @@ void main() {
       };
       var result = fxWithEnvs('CONTAIN(\$cities\$, ["上海"])', envs);
       expect(result, true);
+
+      result = fxWithEnvs('CONTAIN(\$countries\$, ["China"])', envs);
+      expect(result, false);
+
+      result = fxWithEnvs('CONTAIN([null], \$countries\$)', envs);
+      expect(result, false);
     });
   });
 

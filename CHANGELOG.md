@@ -1,3 +1,11 @@
+## 1.0.10
+
+- fix: resolve CONTAIN null parameters
+
+## 1.0.9
+
+- Fix empty expression.
+
 ## 1.0.8
 
 - Change `fx(String)` to `fx(String, {GetEnvValue?})`.

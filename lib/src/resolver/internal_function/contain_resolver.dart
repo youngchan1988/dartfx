@@ -18,10 +18,16 @@ class FuncContainResolver extends AstResolver {
       var argList = arguments!.first;
       var argSub = arguments[1];
       var argListValue = executor.execute(astContext, argList);
+      if (argListValue == null) {
+        return false;
+      }
       if (argListValue is! List) {
         throw 'Function CONTAIN must be List arguments';
       }
       var argSubValue = executor.execute(astContext, argSub);
+      if (argSubValue == null) {
+        return false;
+      }
       if (argSubValue is! List) {
         throw 'Function CONTAIN must be List arguments';
       }
