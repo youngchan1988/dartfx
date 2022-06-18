@@ -13,7 +13,7 @@ dependencies:
   analyzer: ^4.1.0
   convert: ^3.0.2
   crypto: ^3.0.2
-  meta: ^1.8.0
+  meta: any
 
 dev_dependencies:
   lints: ^2.0.0
