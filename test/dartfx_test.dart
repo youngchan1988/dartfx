@@ -356,11 +356,14 @@ void main() {
     test('Test CONTAIN', () {
       var envs = {
         "cities": ["北京", "上海", "广州", "深圳", "重庆"],
+        "88781": {
+          "field_Spp7x": ["3"],
+        }
       };
       var result = fxWithEnvs('CONTAIN(\$cities\$, ["上海"])', envs);
       expect(result, true);
 
-      result = fxWithEnvs('CONTAIN(\$countries\$, ["China"])', envs);
+      result = fxWithEnvs('CONTAIN(\$88781.field_Spp7x\$, ["5"])', envs);
       expect(result, false);
 
       result = fxWithEnvs('CONTAIN([null], \$countries\$)', envs);
