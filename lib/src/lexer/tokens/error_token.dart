@@ -223,5 +223,6 @@ String closeQuoteFor(String openQuote) {
     "r'": "'",
     'r"""': '"""',
     "r'''": "'''",
+    '\$': '\$',
   }[openQuote]!;
 }

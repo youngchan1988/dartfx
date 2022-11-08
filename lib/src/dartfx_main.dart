@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:analyzer/error/error.dart';
 import 'package:analyzer/error/listener.dart';
 import 'package:analyzer/src/string_source.dart';
 import 'package:dartfx/dartfx.dart';
@@ -9,6 +10,7 @@ import 'package:dartfx/src/util/logger.dart';
 import 'ast_impl/ast.dart';
 import 'ast_impl/ast_runtime_visitor.dart';
 import 'lexer/expression_lexer.dart';
+import 'lexer/tokens/token.dart';
 import 'parser/ast_builder.dart';
 import 'parser/parser.dart';
 import 'runtime/ast_runtime.dart';
@@ -219,4 +221,27 @@ dynamic fxAssignment(String expression, Map envValues,
   }
 
   return rightValue;
+}
+
+Token parseToken(String expression) {
+  var lexer = ExpressionLexer(expression: expression);
+  return lexer.scan();
+}
+
+List<AnalysisError>? analysisExpression(String expression) {
+  var source = StringSource(expression, '');
+  var errorCollector = RecordingErrorListener();
+
+  var token = parseToken(expression);
+
+  var astBuilder = AstBuilder(
+      ErrorReporter(
+        errorCollector,
+        source,
+        isNonNullableByDefault: false,
+      ),
+      true);
+  var parser = Parser(astBuilder);
+  parser.parseProgram(token);
+  return errorCollector.errors;
 }

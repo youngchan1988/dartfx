@@ -327,6 +327,12 @@ void main() {
 
       result = fx('SUBSTRING("hello world", 3, 4)');
       expect(result, "lo w");
+
+      var envs = {
+        'name': 'hello world-',
+      };
+      result = fxWithEnvs('SUBSTRING(\$name\$, 0, \$name\$.length - 1)', envs);
+      expect(result, 'hello world');
     });
 
     test('Test REPLACESTRING', () {

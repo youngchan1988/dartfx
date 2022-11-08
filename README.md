@@ -43,7 +43,7 @@ The operator doc : [Operators | Dart](https://dart.dev/guides/language/language-
 
 ```yaml
 dependencies:
-    dartfx: ^1.0.10
+    dartfx: ^1.0.13
 ```
 
 To build `jsfx`.

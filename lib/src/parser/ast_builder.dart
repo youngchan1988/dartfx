@@ -18,6 +18,7 @@ import 'package:analyzer/error/listener.dart';
 import 'package:dartfx/src/lexer/tokens/token_constants.dart';
 import '../messages/codes.dart'
     show
+        Code,
         LocatedMessage,
         Message,
         messageDirectiveAfterDeclaration,
@@ -724,13 +725,28 @@ class AstBuilder extends StackListener {
   void endProgram(Token endToken) {
     debugEvent("CompilationUnit");
 
-    var expression = pop() as Expression;
+    var expression = pop();
+    if (expression is! Expression) {
+      var token = expression as Token;
+      handleRecoverableError(
+          Message(Code('TypeError'), problemMessage: 'Unexpect Expression'),
+          token,
+          endToken);
+      return;
+    }
+    var beginToken = pop();
+    if (beginToken is! Token) {
+      var exp = beginToken as Expression;
+      handleRecoverableError(
+          Message(Code('TypeError'), problemMessage: 'Unexpect Token'),
+          exp.beginToken,
+          exp.endToken);
+    } else {
+      checkEmpty(endToken.charOffset);
 
-    var beginToken = pop() as Token;
-    checkEmpty(endToken.charOffset);
-
-    var program = ast.program(beginToken, endToken, expression);
-    push(program);
+      var program = ast.program(beginToken, endToken, expression as Expression);
+      push(program);
+    }
   }
 
   @override

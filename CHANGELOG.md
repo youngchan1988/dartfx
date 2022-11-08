@@ -1,3 +1,8 @@
+## 1.0.13
+
+* export error token
+* close quote support '$'
+
 ## 1.0.10
 
 - fix: resolve CONTAIN null parameters

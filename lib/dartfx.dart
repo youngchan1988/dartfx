@@ -10,5 +10,8 @@ export 'src/runtime/ast_resolver.dart';
 export 'src/runtime/ast_runtime_node.dart';
 export 'src/runtime/ast_runtime_executor.dart';
 export 'src/runtime/ast_context.dart';
+export 'src/lexer/tokens/token.dart';
+export 'src/lexer/tokens/error_token.dart';
+
 
 // TODO: Export any libraries intended for clients of this package.
